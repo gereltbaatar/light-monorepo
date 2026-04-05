@@ -6,7 +6,12 @@
         "name": "next"
       }
     ],
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "paths": {
+      "@workspace/ui": ["../../packages/ui/src/index.ts"],
+      "@workspace/ui/*": ["../../packages/ui/src/*"],
+      "@/*": ["./*"]
+    }
   },
   "include": [
     "**/*.ts",
