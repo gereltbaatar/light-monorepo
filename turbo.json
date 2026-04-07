@@ -1,11 +1,50 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalEnv": [
+    "NODE_ENV"
+  ],
+  "globalDependencies": [
+    "tsconfig.json",
+    ".env"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": [
+        "NEXT_PUBLIC_*"
+      ],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "portfolio#build": {
+      "dependsOn": ["^build"],
+      "env": [
+        "NEXT_PUBLIC_*"
+      ],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "expense-tracker#build": {
+      "dependsOn": ["^build"],
+      "env": [
+        "NEXT_PUBLIC_*"
+      ],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "dotenv-management#build": {
+      "dependsOn": ["^build"],
+      "env": [
+        "NEXT_PUBLIC_*",
+        "DOTENV_KEY"
+      ],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "docs#build": {
+      "dependsOn": ["^build"],
+      "env": [
+        "NEXT_PUBLIC_*"
+      ],
+      "outputs": [".next/**", "!.next/cache/**"]
     },
     "dev": {
       "cache": false,
