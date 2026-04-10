@@ -72,7 +72,7 @@ export const BottomNav = () => {
                                                 ? "text-[#1C1C1E] drop-shadow-lg"
                                                 : "text-gray-400"
                                                 }`}
-                                            strokeWidth={isActive ? 2.5 : 2}
+                                            strokeWidth={isActive ? 1.5 : 1}
                                         />
                                     </motion.div>
                                 </Link>
