@@ -19,7 +19,7 @@ export const GoalCard = () => {
                 </div>
 
                 {/* Circular Progress */}
-                <div className="w-20 h-20 mx-auto mb-3">
+                <div className="w-26 h-26 mx-auto mb-3">
                     <CircularProgressbar
                         value={percentage}
                         text={`${percentage}%`}
