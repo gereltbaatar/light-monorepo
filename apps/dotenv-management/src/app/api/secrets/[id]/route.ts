@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import type { SecretWithGroup } from "@/types/database";
 
 export async function PUT(
   request: Request,
@@ -24,7 +25,8 @@ export async function PUT(
     .eq("id", id)
     .single();
 
-  if (!secret || (secret.secret_groups as any).user_id !== user.id) {
+  const typedSecret = secret as SecretWithGroup | null;
+  if (!typedSecret || typedSecret.secret_groups.user_id !== user.id) {
     return NextResponse.json({ error: "Secret not found" }, { status: 404 });
   }
 
@@ -67,7 +69,8 @@ export async function DELETE(
     .eq("id", id)
     .single();
 
-  if (!secret || (secret.secret_groups as any).user_id !== user.id) {
+  const typedSecret = secret as SecretWithGroup | null;
+  if (!typedSecret || typedSecret.secret_groups.user_id !== user.id) {
     return NextResponse.json({ error: "Secret not found" }, { status: 404 });
   }
 
