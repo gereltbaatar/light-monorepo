@@ -2,11 +2,13 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "globalEnv": [
-    "NODE_ENV"
+    "NODE_ENV",
+    "DOTENV_API_URL"
   ],
   "globalDependencies": [
     "tsconfig.json",
-    ".env"
+    ".env",
+    ".env.shared"
   ],
   "tasks": {
     "build": {

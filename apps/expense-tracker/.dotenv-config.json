@@ -1,0 +1,4 @@
+{
+  "groups": ["expense-tracker", "shared"],
+  "environment": "dev"
+}

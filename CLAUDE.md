@@ -48,6 +48,7 @@ All apps use:
 ### Shared Packages (`packages/`)
 | Package | Import As | Purpose |
 |---------|-----------|---------|
+| `dotenv-fetch` | `@workspace/dotenv-fetch` | Fetch env vars from dotenv-management API |
 | `ui` | `@workspace/ui` | shadcn/ui component library (47 components) |
 | `eslint-config` | `@repo/eslint-config` | Shared ESLint configurations |
 | `typescript-config` | `@repo/typescript-config` | Shared TypeScript configs |
@@ -192,9 +193,32 @@ Before writing Next.js code, **check `node_modules/next/dist/docs/`** for curren
 - Workspace protocol (`workspace:*`) used for internal dependencies
 
 ### Environment Variables
-- Most apps use `NEXT_PUBLIC_*` prefix for client-side env vars
-- `dotenv-management` app requires `DOTENV_KEY` for builds
-- Turborepo tracks `.env*` files as global dependencies
+
+**Centralized Secrets Management:**
+- All apps fetch secrets from `dotenv-management` API
+- Root-level `.env.shared` contains `DOTENV_API_URL`
+- Each app has `.dotenv-config.json` specifying which secret groups to fetch
+- Secrets automatically fetched before `dev` and `build` commands
+
+**Configuration Priority:**
+1. CLI arguments (highest)
+2. `.dotenv-config.json` (app-specific groups/env)
+3. `.env.local` (project-level overrides)
+4. `.env.shared` (monorepo-wide config)
+5. Default values (lowest)
+
+**Example `.dotenv-config.json`:**
+```json
+{
+  "groups": ["expense-tracker", "shared"],
+  "environment": "dev"
+}
+```
+
+**Most apps use:**
+- `NEXT_PUBLIC_*` prefix for client-side env vars
+- `dotenv-management` requires `DOTENV_KEY` for builds
+- Turborepo tracks `.env*`, `.env.shared` as global dependencies
 
 ### Caching Behavior
 - Build outputs cached in `.next/**` and `dist/**`
