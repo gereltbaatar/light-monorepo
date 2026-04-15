@@ -4,11 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:fetch": "pnpm run fetch-env && next dev",
-    "build": "pnpm run fetch-env && next build",
+    "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "fetch-env": "../../node_modules/.bin/tsx ../../packages/dotenv-fetch/src/fetch-env.ts"
+    "lint": "eslint"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

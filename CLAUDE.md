@@ -49,7 +49,7 @@ All apps use:
 | Package | Import As | Purpose |
 |---------|-----------|---------|
 | `dotenv-fetch` | `@workspace/dotenv-fetch` | Fetch env vars from dotenv-management API |
-| `ui` | `@workspace/ui` | shadcn/ui component library (47 components) |
+| `ui` | `@workspace/ui` | shadcn/ui component library (46 components) |
 | `eslint-config` | `@repo/eslint-config` | Shared ESLint configurations |
 | `typescript-config` | `@repo/typescript-config` | Shared TypeScript configs |
 
