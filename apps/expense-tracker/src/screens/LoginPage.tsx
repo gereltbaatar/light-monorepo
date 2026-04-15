@@ -17,14 +17,11 @@ function LoginContent() {
 
     const handleEmailSubmit = (email: string, password: string) => {
         console.log("Email login:", { email, password });
-        // TODO: Implement actual login logic
-        // Example: await signIn(email, password)
+
     };
 
     const handleGoogleLogin = () => {
         console.log("Google login initiated");
-        // TODO: Implement Google OAuth logic
-        // Example: await signInWithGoogle()
     };
 
     return (

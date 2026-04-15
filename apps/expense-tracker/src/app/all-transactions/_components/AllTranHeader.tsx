@@ -2,10 +2,9 @@
 
 import { ChevronLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { AllTransactionsProps } from "./type";
 import { useEffect, useState } from "react";
 
-export const Header = ({ count }: AllTransactionsProps) => {
+export const AllTranHeader = () => {
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 

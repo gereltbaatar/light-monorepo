@@ -25,9 +25,9 @@ export const TotalBalance = () => {
             </div>
 
             {/* Income & Expense Cards */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 rounded-3xl">
                 {/* Income Card */}
-                <div className="flex items-center gap-2 px-3 py-2 rounded-3xl">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-[#F8F9FA]">
                     <TrendingUp className="w-5 h-5 text-green-600" strokeWidth={2} />
                     <div>
                         <p className="text-sm text-green-700 font-medium">
@@ -40,7 +40,7 @@ export const TotalBalance = () => {
                 </div>
 
                 {/* Expense Card */}
-                <div className="flex items-center gap-2  px-3 py-2 rounded-3xl">
+                <div className="flex items-center gap-2  px-3 py-2 rounded-2xl bg-[#F8F9FA]">
                     <TrendingDown className="w-5 h-5 text-red-600" strokeWidth={2} />
                     <div>
                         <p className="text-sm text-red-700 font-medium">

@@ -1,19 +1,21 @@
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 
-export const Header = () => {
+
+export const ProfileHeader = () => {
+
     return (
         <header className="w-full ">
             <div className="w-full px-4 py-6">
                 <div className="flex items-center justify-between">
                     {/* Greeting Section */}
                     <div className="flex flex-col justify-center">
-                        <p className="text-2xl font-bold text-[#A6A6A6] tracking-tight h-[30px]">
-                            Good Afternoon
-                        </p>
                         <h1 className="text-2xl font-bold text-[#090909] tracking-tight h-[30px]">
                             Gereltbaatar
                         </h1>
+                        <p className="text-2xl font-bold text-[#A6A6A6] tracking-tight h-[30px]">
+                            mglgerelt@gmail.com
+                        </p>
                     </div>
 
                     {/* Profile Picture */}
@@ -31,5 +33,5 @@ export const Header = () => {
                 </div>
             </div>
         </header>
-    );
-};
+    )
+}

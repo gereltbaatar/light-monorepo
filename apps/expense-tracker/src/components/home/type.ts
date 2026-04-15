@@ -3,4 +3,6 @@ export interface TransactionsCardProps {
     title: string;
     amount: string;
     timestamp: string; // ISO 8601 datetime string from database
+    onEdit?: () => void;
+    onDelete?: () => void;
 }

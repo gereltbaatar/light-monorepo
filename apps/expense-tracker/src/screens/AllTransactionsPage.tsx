@@ -3,7 +3,7 @@
 import { TransactionsCard } from "@/components/home/TransactionsCard";
 import { TransactionsCardProps } from "@/components/home/type";
 import { BottomNav } from "@/components/navigation/BottomNav";
-import { Header } from "@/components/all-transactions";
+import { AllTranHeader } from "@/app/all-transactions/_components";
 
 // Helper to generate dynamic dates
 const getTodayTimestamp = (hours: number, minutes: number): string => {
@@ -164,10 +164,20 @@ const groupTransactionsByDate = (transactions: TransactionsCardProps[]) => {
 const AllTransactionsPage = () => {
     const groupedTransactions = groupTransactionsByDate(allTransactions);
 
+    const handleEdit = (title: string) => {
+        console.log("Edit transaction:", title);
+        // TODO: Implement edit functionality
+    };
+
+    const handleDelete = (title: string) => {
+        console.log("Delete transaction:", title);
+        // TODO: Implement delete functionality
+    };
+
     return (
         <div className="min-h-screen bg-white pb-32">
             <div className="max-w-[430px] mx-auto">
-                <Header count={allTransactions.length} />
+                <AllTranHeader />
 
                 {/* Transactions grouped by date */}
                 <div className="px-4 py-6">
@@ -188,6 +198,8 @@ const AllTransactionsPage = () => {
                                             title={transaction.title}
                                             amount={transaction.amount}
                                             timestamp={transaction.timestamp}
+                                            onEdit={() => handleEdit(transaction.title)}
+                                            onDelete={() => handleDelete(transaction.title)}
                                         />
                                     ))}
                                 </div>
