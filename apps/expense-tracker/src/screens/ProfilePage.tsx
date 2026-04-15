@@ -1,4 +1,5 @@
-import { ProfileHeader, UserInfo } from "@/app/profile/_components";
+import { ProfileHeader, UserInfo, Settings } from "@/app/profile/_components";
+
 import { BottomNav } from "@/components/navigation/BottomNav";
 
 const ProfilePage = () => {
