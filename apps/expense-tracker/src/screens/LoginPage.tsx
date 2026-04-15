@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { GoogleSvg } from "@/components/ui/svg";
 import { cn } from "@/lib/utils";
-import { EmailLoginForm, GoogleLoginForm } from "@/app/login/_components";
+import { EmailLoginForm } from "@/app/login/_components";
 
 function LoginContent() {
     const searchParams = useSearchParams();
@@ -70,8 +70,6 @@ function LoginContent() {
                     {/* Login Forms */}
                     {provider === "email" ? (
                         <EmailLoginForm onSubmit={handleEmailSubmit} />
-                    ) : provider === "google" ? (
-                        <GoogleLoginForm onGoogleLogin={handleGoogleLogin} />
                     ) : (
                         <div className="w-full max-w-md mx-auto px-4 space-y-3">
                             <Button
@@ -81,11 +79,11 @@ function LoginContent() {
                                     "bg-white text-black hover:bg-gray-100"
                                 )}
                             >
-                                Continue with Gmail
+                                Continue with Email
                             </Button>
 
                             <Button
-                                onClick={() => router.push("/login?provider=google")}
+                                onClick={handleGoogleLogin}
                                 className={cn(
                                     "w-full rounded-full py-6 text-base font-semibold",
                                     "bg-[#2C2C2E] text-white hover:bg-[#3A3A3C]"

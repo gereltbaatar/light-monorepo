@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -49,13 +51,7 @@ export const EmailLoginForm = ({ onSubmit }: EmailLoginFormProps) => {
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Email Input */}
                 <div className="space-y-2">
-                    <label
-                        htmlFor="email"
-                        className="block text-sm font-medium text-gray-300"
-                    >
-                        Email
-                    </label>
-                    <input
+                    <Input
                         id="email"
                         type="email"
                         value={email}
@@ -65,11 +61,10 @@ export const EmailLoginForm = ({ onSubmit }: EmailLoginFormProps) => {
                         }}
                         placeholder="Enter your email"
                         className={cn(
-                            "w-full px-4 py-3 rounded-xl",
+                            "h-12 px-4 rounded-full",
                             "bg-[#1C1C1E] text-white placeholder:text-gray-500",
-                            "border border-gray-700 focus:border-gray-500",
-                            "focus:outline-none focus:ring-2 focus:ring-gray-600/50",
-                            "transition-all duration-200",
+                            "border-gray-700 focus:border-gray-500",
+                            "focus:ring-gray-600/50",
                             errors.email && "border-red-500 focus:border-red-500 focus:ring-red-500/50"
                         )}
                     />
@@ -80,14 +75,8 @@ export const EmailLoginForm = ({ onSubmit }: EmailLoginFormProps) => {
 
                 {/* Password Input */}
                 <div className="space-y-2">
-                    <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-gray-300"
-                    >
-                        Password
-                    </label>
                     <div className="relative">
-                        <input
+                        <Input
                             id="password"
                             type={showPassword ? "text" : "password"}
                             value={password}
@@ -97,11 +86,10 @@ export const EmailLoginForm = ({ onSubmit }: EmailLoginFormProps) => {
                             }}
                             placeholder="Enter your password"
                             className={cn(
-                                "w-full px-4 py-3 pr-12 rounded-xl",
+                                "h-12 px-4 pr-12 rounded-full",
                                 "bg-[#1C1C1E] text-white placeholder:text-gray-500",
-                                "border border-gray-700 focus:border-gray-500",
-                                "focus:outline-none focus:ring-2 focus:ring-gray-600/50",
-                                "transition-all duration-200",
+                                "border-gray-700 focus:border-gray-500",
+                                "focus:ring-gray-600/50",
                                 errors.password && "border-red-500 focus:border-red-500 focus:ring-red-500/50"
                             )}
                         />
@@ -122,21 +110,11 @@ export const EmailLoginForm = ({ onSubmit }: EmailLoginFormProps) => {
                     )}
                 </div>
 
-                {/* Forgot Password Link */}
-                <div className="text-right">
-                    <a
-                        href="/forgot-password"
-                        className="text-sm text-gray-400 hover:text-white transition-colors"
-                    >
-                        Forgot password?
-                    </a>
-                </div>
-
                 {/* Submit Button */}
                 <Button
                     type="submit"
                     className={cn(
-                        "w-full rounded-full py-6 text-base font-semibold mt-6",
+                        "w-full rounded-full py-6 text-base font-semibold",
                         "bg-white text-black hover:bg-gray-100"
                     )}
                 >

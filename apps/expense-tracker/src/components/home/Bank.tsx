@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 export const Bank = () => {
     return (
         <div className="w-full px-4 pt-4">
-            <div className="relative w-full h-[150px] bg-[#1C1C1E] rounded-2xl overflow-hidden">
+            <div className="relative w-full h-[150px] bg-[#1C1C1E] rounded-3xl overflow-hidden">
                 {/* Content */}
                 <div className="relative z-10 w-full h-full px-5 py-5 flex flex-col justify-between">
                     {/* Text Content */}

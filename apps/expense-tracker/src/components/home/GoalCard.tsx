@@ -8,7 +8,7 @@ export const GoalCard = () => {
     const percentage = 20;
 
     return (
-        <div className="h-[220px] w-[155px] bg-[#F8F9FA] shrink-0 rounded-2xl">
+        <div className="h-[220px] w-[155px] bg-[#F8F9FA] shrink-0 rounded-3xl">
             <div className="w-full h-full px-3 py-3 flex flex-col">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4">
