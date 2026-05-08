@@ -65,7 +65,7 @@ export const UserInfo = () => {
                 </div>
 
                 {/* All Transactions Card */}
-                <div className="relative bg-[#CFDDCA] rounded-3xl h-23 overflow-hidden cursor-pointer">
+                <div className="relative bg-[#F8F9FA] rounded-3xl h-23 overflow-hidden cursor-pointer">
                     <div className="absolute top-3 right-3 text-[#2D5016] opacity-30 group-hover:opacity-50 transition-opacity">
                         <ArrowUpRight size={30} strokeWidth={1.5} />
                     </div>
@@ -79,7 +79,7 @@ export const UserInfo = () => {
                 </div>
 
                 {/* Last Login Card */}
-                <div className="relative bg-[#E3F2FD] rounded-3xl h-23 overflow-hidden cursor-pointer">
+                <div className="relative bg-[#F8F9FA] rounded-3xl h-23 overflow-hidden cursor-pointer">
                     <div className="absolute top-3 right-3 text-[#1565C0] opacity-40 group-hover:opacity-60 transition-opacity">
                         <ArrowUpRight size={30} strokeWidth={1.5} />
                     </div>
@@ -93,7 +93,7 @@ export const UserInfo = () => {
                 </div>
 
                 {/* Active Goals Card */}
-                <div className="relative bg-[#FFF3E0] rounded-3xl h-23 overflow-hidden cursor-pointer">
+                <div className="relative bg-[#F8F9FA] rounded-3xl h-23 overflow-hidden cursor-pointer">
                     <div className="absolute top-3 right-3 text-[#E65100] opacity-40 group-hover:opacity-60 transition-opacity">
                         <ArrowUpRight size={30} strokeWidth={1.5} />
                     </div>

@@ -32,7 +32,7 @@ export const Settings = () => {
     ];
 
     return (
-        <div className="w-full px-4 pt-4">
+        <div className="w-full px-4 pt-4 pb-8">
             <div className="w-full bg-[#F8F9FA] rounded-3xl overflow-hidden">
                 {settings.map((setting, index) => (
                     <div key={index}>

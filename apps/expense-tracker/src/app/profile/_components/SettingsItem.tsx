@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight, Bell, Globe, Palette, Settings } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface SettingItemProps {
@@ -17,6 +18,7 @@ interface SettingItemProps {
 }
 
 export const SettingsItem = ({ setting }: SettingItemProps) => {
+    const router = useRouter();
     const [isToggled, setIsToggled] = useState(setting.isToggled ?? false);
 
     const handleToggle = () => {
@@ -26,8 +28,7 @@ export const SettingsItem = ({ setting }: SettingItemProps) => {
 
     const handleClick = () => {
         if (setting.path !== "none") {
-            // TODO: Navigate to setting.path
-            console.log("Navigate to:", setting.path);
+            router.push(setting.path);
         }
     };
 

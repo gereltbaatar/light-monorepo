@@ -6,16 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
-import { signInWithEmail, type AuthActionResult } from "@/app/_actions/auth";
+import { signUpWithEmail, type AuthActionResult } from "@/app/_actions/auth";
 
-export const EmailLoginForm = () => {
+export const EmailRegisterForm = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [clientErrors, setClientErrors] = useState({ email: "", password: "" });
 
     const [state, formAction, isPending] = useActionState<AuthActionResult, FormData>(
-        signInWithEmail,
+        signUpWithEmail,
         undefined
     );
 
@@ -55,7 +55,6 @@ export const EmailLoginForm = () => {
     return (
         <div className="w-full max-w-md mx-auto px-6">
             <form action={formAction} onSubmit={handleSubmit} className="space-y-4">
-                {/* Email Input */}
                 <div className="space-y-2">
                     <Input
                         id="email"
@@ -80,7 +79,6 @@ export const EmailLoginForm = () => {
                     )}
                 </div>
 
-                {/* Password Input */}
                 <div className="space-y-2">
                     <div className="relative">
                         <Input
@@ -92,7 +90,7 @@ export const EmailLoginForm = () => {
                                 setPassword(e.target.value);
                                 setClientErrors((prev) => ({ ...prev, password: "" }));
                             }}
-                            placeholder="Enter your password"
+                            placeholder="Create a password (6+ chars)"
                             className={cn(
                                 "h-12 px-4 pr-12 rounded-full",
                                 "bg-[#1C1C1E] text-white placeholder:text-gray-500",
@@ -118,7 +116,6 @@ export const EmailLoginForm = () => {
                     )}
                 </div>
 
-                {/* Submit Button */}
                 <Button
                     type="submit"
                     disabled={isPending}
@@ -128,7 +125,7 @@ export const EmailLoginForm = () => {
                         "disabled:opacity-60"
                     )}
                 >
-                    {isPending ? "Signing in…" : "Continue"}
+                    {isPending ? "Creating account…" : "Create Account"}
                 </Button>
             </form>
         </div>

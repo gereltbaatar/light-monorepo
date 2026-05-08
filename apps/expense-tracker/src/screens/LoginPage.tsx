@@ -1,27 +1,39 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useTransition } from "react";
+import { toast } from "sonner";
 import EvilEye from "@/components/EvilEye";
-import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { GoogleSvg } from "@/components/ui/svg";
 import { cn } from "@/lib/utils";
 import { EmailLoginForm } from "@/app/login/_components";
+import { signInWithGoogle } from "@/app/_actions/auth";
 
 function LoginContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const provider = searchParams.get("provider");
+    const oauthError = searchParams.get("error");
+    const [isOAuthPending, startOAuth] = useTransition();
 
-    const handleEmailSubmit = (email: string, password: string) => {
-        console.log("Email login:", { email, password });
-
-    };
+    useEffect(() => {
+        if (oauthError) {
+            toast.error("Sign-in failed. Please try again.");
+            const url = new URL(window.location.href);
+            url.searchParams.delete("error");
+            router.replace(url.pathname + url.search);
+        }
+    }, [oauthError, router]);
 
     const handleGoogleLogin = () => {
-        console.log("Google login initiated");
+        startOAuth(async () => {
+            const result = await signInWithGoogle();
+            if (result?.error) {
+                toast.error(result.error);
+            }
+        });
     };
 
     return (
@@ -66,7 +78,7 @@ function LoginContent() {
 
                     {/* Login Forms */}
                     {provider === "email" ? (
-                        <EmailLoginForm onSubmit={handleEmailSubmit} />
+                        <EmailLoginForm />
                     ) : (
                         <div className="w-full max-w-md mx-auto px-4 space-y-3">
                             <Button
@@ -81,13 +93,15 @@ function LoginContent() {
 
                             <Button
                                 onClick={handleGoogleLogin}
+                                disabled={isOAuthPending}
                                 className={cn(
                                     "w-full rounded-full py-6 text-base font-semibold",
-                                    "bg-[#2C2C2E] text-white hover:bg-[#3A3A3C]"
+                                    "bg-[#2C2C2E] text-white hover:bg-[#3A3A3C]",
+                                    "disabled:opacity-60"
                                 )}
                             >
                                 <GoogleSvg size={24} />
-                                Continue with Google
+                                {isOAuthPending ? "Redirecting…" : "Continue with Google"}
                             </Button>
                         </div>
                     )}
@@ -95,7 +109,7 @@ function LoginContent() {
                     {/* Footer Links */}
                     <div className="text-center mt-8 px-6">
                         <p className="text-gray-400 text-sm">
-                            Don't have an account?{" "}
+                            Don&apos;t have an account?{" "}
                             <Link
                                 href="/register"
                                 className="text-white font-semibold hover:underline transition-all"

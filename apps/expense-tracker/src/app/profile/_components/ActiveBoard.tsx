@@ -27,17 +27,17 @@ export const ActiveBoard = () => {
     const activityData = generateMockData();
 
     const panelColors = {
-        0: '#2D2D2D',
-        2: '#665500',
-        4: '#997700',
-        8: '#CCAA00',
-        10: '#FFD700',
+        0: '#EBEDF0',
+        2: '#9BE9A8',
+        4: '#40C463',
+        8: '#30A14E',
+        10: '#216E39',
     };
 
     return (
         <div className="w-full px-4 pb-4">
-            <div className="w-full bg-[#1C1C1E] rounded-3xl px-3 py-3">
-                <h3 className="text-lg font-semibold text-white">Activity Heatmap</h3>
+            <div className="w-full bg-[#F8F9FA] rounded-3xl p-3 py-3">
+                <h3 className="text-lg font-semibold text-[#1C1C1E]">Activity Heatmap</h3>
 
                 <div className="overflow-x-auto">
                     <HeatMap
