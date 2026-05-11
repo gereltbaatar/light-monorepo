@@ -5,3 +5,7 @@ export * from "./BudgetCard";
 export * from "./Bank";
 export * from "./Transactions";
 export * from "./TransactionsCard";
+export * from "./TransactionsList";
+export * from "./AddNewDrawer";
+export * from "./NewGoalDrawer";
+export * from "./NewBudgetDrawer";

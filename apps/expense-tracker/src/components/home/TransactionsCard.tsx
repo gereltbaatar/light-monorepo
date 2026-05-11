@@ -3,10 +3,29 @@
 import { ArrowDown, ArrowUp, Pencil, Trash2 } from "lucide-react";
 import { TransactionsCardProps } from "./type";
 import { moneyFormatter } from "../functions";
-import { motion, useMotionValue, useTransform } from "framer-motion";
-import { useState } from "react";
+import { animate, motion, useMotionValue, useTransform } from "framer-motion";
+import { useEffect, useState } from "react";
 
-export const TransactionsCard = ({ transactionType, title, amount, timestamp, onEdit, onDelete }: TransactionsCardProps) => {
+// Stiff spring — quick snap with very little bounce.
+const SNAP_TRANSITION = {
+    type: "spring" as const,
+    stiffness: 600,
+    damping: 50,
+    mass: 0.6,
+} as const;
+
+export const TransactionsCard = ({
+    transactionType,
+    title,
+    amount,
+    timestamp,
+    onEdit,
+    onDelete,
+    cardId,
+    isOpen,
+    onSwipeOpen,
+    onSwipeClose,
+}: TransactionsCardProps) => {
     const [isDragging, setIsDragging] = useState(false);
     const x = useMotionValue(0);
 
@@ -21,13 +40,25 @@ export const TransactionsCard = ({ transactionType, title, amount, timestamp, on
     const buttonOpacity = useTransform(x, [-120, -60, 0], [1, 0.5, 0]);
     const buttonScale = useTransform(x, [-120, -60, 0], [1, 0.8, 0.5]);
 
+    // Sync motion value to controlled `isOpen` from the parent. When another
+    // card opens, this one snaps closed. Skipped while the user is actively
+    // dragging this card so we don't fight the gesture.
+    useEffect(() => {
+        if (isDragging) return;
+        const target = isOpen ? -120 : 0;
+        const controls = animate(x, target, SNAP_TRANSITION);
+        return () => controls.stop();
+    }, [isOpen, isDragging, x]);
+
     const handleDragEnd = (_: any, info: any) => {
         setIsDragging(false);
-        // If dragged more than 60px to the left, keep buttons visible
-        if (info.offset.x < -60) {
-            x.set(-120);
+        const shouldOpen = info.offset.x < -60;
+        if (shouldOpen) {
+            if (cardId) onSwipeOpen?.(cardId);
+            else animate(x, -120, SNAP_TRANSITION);
         } else {
-            x.set(0);
+            if (cardId) onSwipeClose?.();
+            else animate(x, 0, SNAP_TRANSITION);
         }
     };
 
@@ -57,7 +88,7 @@ export const TransactionsCard = ({ transactionType, title, amount, timestamp, on
             <motion.div
                 drag="x"
                 dragConstraints={{ left: -120, right: 0 }}
-                dragElastic={0.05}
+                dragElastic={0}
                 onDragStart={() => setIsDragging(true)}
                 onDragEnd={handleDragEnd}
                 style={{ x }}

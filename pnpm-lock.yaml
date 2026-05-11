@@ -139,9 +139,18 @@ importers:
       '@base-ui/react':
         specifier: ^1.3.0
         version: 1.3.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@supabase/ssr':
+        specifier: ^0.10.2
+        version: 0.10.2(@supabase/supabase-js@2.103.0)
+      '@supabase/supabase-js':
+        specifier: ^2.103.0
+        version: 2.103.0
       '@uiw/react-heat-map':
         specifier: ^2.3.3
         version: 2.3.3(@babel/runtime@7.29.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@workspace/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -172,6 +181,9 @@ importers:
       shadcn:
         specifier: ^4.1.2
         version: 4.1.2(@types/node@20.19.39)(typescript@5.9.2)
+      sonner:
+        specifier: ^2.0.7
+        version: 2.0.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       tailwind-merge:
         specifier: ^3.5.0
         version: 3.5.0

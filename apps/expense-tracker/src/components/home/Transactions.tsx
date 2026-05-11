@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { TransactionsCard } from "./TransactionsCard";
+import { TransactionsList } from "./TransactionsList";
 import { TransactionsCardProps } from "./type";
 
 // Helper to generate dynamic dates (today, yesterday, 2 days ago)
@@ -108,7 +108,11 @@ const groupTransactionsByDate = (transactions: TransactionsCardProps[]) => {
 };
 
 export const Transactions = () => {
-    const groupedTransactions = groupTransactionsByDate(mockTransactions);
+    const groupedMap = groupTransactionsByDate(mockTransactions);
+    const grouped = Object.entries(groupedMap).map(([label, items]) => ({
+        label,
+        items,
+    }));
 
     return (
         <div className="px-4 pb-6">
@@ -125,30 +129,7 @@ export const Transactions = () => {
                 </Link>
             </div>
 
-            {/* transactions grouped by date */}
-            <div className="flex flex-col gap-6">
-                {Object.entries(groupedTransactions).map(([dateLabel, transactions]) => (
-                    <div key={dateLabel} className="flex flex-col gap-3">
-                        {/* Date header */}
-                        <h2 className="text-sm font-semibold text-[#8E8E93] uppercase tracking-wide">
-                            {dateLabel}
-                        </h2>
-
-                        {/* Transactions for this date */}
-                        <div className="flex flex-col gap-3">
-                            {transactions.map((transaction, index) => (
-                                <TransactionsCard
-                                    key={`${dateLabel}-${index}`}
-                                    transactionType={transaction.transactionType}
-                                    title={transaction.title}
-                                    amount={transaction.amount}
-                                    timestamp={transaction.timestamp}
-                                />
-                            ))}
-                        </div>
-                    </div>
-                ))}
-            </div>
+            <TransactionsList grouped={grouped} />
         </div>
     );
 };

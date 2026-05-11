@@ -41,3 +41,34 @@ export async function updateDisplayName(
     revalidatePath("/");
     return { ok: true };
 }
+
+export async function updateAvatarUrl(
+    url: string
+): Promise<ProfileActionResult> {
+    if (!url.startsWith("https://res.cloudinary.com/")) {
+        return { error: "Invalid avatar URL" };
+    }
+
+    const supabase = await createClient();
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { error: "Not signed in" };
+    }
+
+    const { error } = await supabase
+        .from("profiles")
+        .update({ avatar_url: url })
+        .eq("id", user.id);
+
+    if (error) {
+        return { error: error.message };
+    }
+
+    revalidatePath("/profile");
+    revalidatePath("/profile/general");
+    revalidatePath("/");
+    return { ok: true };
+}

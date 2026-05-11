@@ -15,7 +15,7 @@ pnpm dev --filter=docs            # Run docs (port 3001)
 pnpm build                        # Build all packages and apps
 pnpm build --filter=expense-tracker
 pnpm lint                         # Lint all packages
-pnpm check-types                  # Type check (docs only via check-types)
+pnpm check-types                  # Type check (only `docs` defines a check-types script; `packages/ui` has `type-check`)
 pnpm format                       # Format with Prettier
 
 # Package Management (pnpm 9.0.0 required)
@@ -48,10 +48,13 @@ All apps use:
 ### Shared Packages (`packages/`)
 | Package | Import As | Purpose |
 |---------|-----------|---------|
-| `dotenv-fetch` | `@workspace/dotenv-fetch` | Fetch env vars from dotenv-management API |
-| `ui` | `@workspace/ui` | shadcn/ui component library (46 components) |
-| `eslint-config` | `@repo/eslint-config` | Shared ESLint configurations |
-| `typescript-config` | `@repo/typescript-config` | Shared TypeScript configs |
+| `ui` | `@workspace/ui` | shadcn/ui component library (~44 Radix-based components) |
+| `dotenv-fetch` | `@workspace/dotenv-fetch` | Standalone helper for fetching env vars from the dotenv-management API. Built via `tsc` to `dist/`; not currently consumed by any app via workspace dep — apps that need it have their own `scripts/fetch-env.ts` (see `dotenv-management`). |
+| `eslint-config` | `@repo/eslint-config` | Shared ESLint configs (`./base`, `./next-js`, `./react-internal`) |
+| `typescript-config` | `@repo/typescript-config` | Shared `tsconfig.json` bases |
+
+### Per-App Documentation
+`apps/expense-tracker/` and `apps/dotenv-management/` contain their own `CLAUDE.md`, `AGENTS.md`, and other docs (`SETUP.md`, `DEPLOYMENT.md`, `ENV_MANAGEMENT.md` for dotenv-management). Read these when working inside a specific app — they capture app-specific architecture, supabase schema, and deployment specifics that this root file does not.
 
 ### UI Package Details
 The `@workspace/ui` package is a comprehensive shadcn/ui component library built on Radix UI primitives.
@@ -195,10 +198,9 @@ Before writing Next.js code, **check `node_modules/next/dist/docs/`** for curren
 ### Environment Variables
 
 **Centralized Secrets Management:**
-- All apps fetch secrets from `dotenv-management` API
-- Root-level `.env.shared` contains `DOTENV_API_URL`
-- Each app has `.dotenv-config.json` specifying which secret groups to fetch
-- Secrets automatically fetched before `dev` and `build` commands
+- The `dotenv-management` app exposes an API at `DOTENV_API_URL` (set in root `.env.shared`) backed by Supabase. Other apps may store a `.dotenv-config.json` declaring which secret groups they need.
+- Only `dotenv-management` runs `pnpm fetch-env` automatically (its `dev`/`build` scripts chain `pnpm run fetch-env && next ...`). Other apps do **not** auto-fetch — if you need their secrets locally, run the fetch script manually or populate `.env.local` yourself.
+- `dotenv-management`'s `fetch-env` script reads `SECRET_GROUP` (defaults to `default`) and writes to `.env.local`.
 
 **Configuration Priority:**
 1. CLI arguments (highest)
@@ -216,9 +218,12 @@ Before writing Next.js code, **check `node_modules/next/dist/docs/`** for curren
 ```
 
 **Most apps use:**
-- `NEXT_PUBLIC_*` prefix for client-side env vars
-- `dotenv-management` requires `DOTENV_KEY` for builds
-- Turborepo tracks `.env*`, `.env.shared` as global dependencies
+- `NEXT_PUBLIC_*` prefix for client-side env vars (whitelisted per-task in `turbo.json`)
+- `dotenv-management` is the only build that has `DOTENV_KEY` in its env allowlist
+- Turborepo tracks `tsconfig.json`, `.env`, and `.env.shared` as global dependencies; per-task builds also include `.env*` as inputs
+
+### Deployment
+The root `vercel.json` pins the Vercel deployment to a single app build: `pnpm turbo build --filter=dotenv-management`. To deploy other apps to Vercel, override the project's build command rather than editing the root file.
 
 ### Caching Behavior
 - Build outputs cached in `.next/**` and `dist/**`
