@@ -42,7 +42,19 @@ export async function signUpWithEmail(
 
 export async function signInWithGoogle(): Promise<AuthActionResult> {
   const supabase = await createClient();
-  const origin = (await headers()).get("origin") ?? "";
+
+  // `origin` is absent on some navigations, which would send Supabase a
+  // relative "/auth/callback" and break the round trip. Fall back to the Host
+  // header. Note this must stay in sync with resolveOrigin() in
+  // src/app/auth/callback/route.ts.
+  const headerList = await headers();
+  const host = headerList.get("x-forwarded-host") ?? headerList.get("host");
+  const proto =
+    headerList.get("x-forwarded-proto") ??
+    (host?.startsWith("localhost") || host?.startsWith("127.0.0.1")
+      ? "http"
+      : "https");
+  const origin = headerList.get("origin") ?? (host ? `${proto}://${host}` : "");
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",

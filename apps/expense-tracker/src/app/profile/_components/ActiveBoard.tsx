@@ -1,8 +1,13 @@
 "use client";
 
 import HeatMap from '@uiw/react-heat-map';
+import { useTheme } from "@/components/ThemeProvider";
+import { useT } from '@/lib/i18n/client';
+import { profileDict } from '@/lib/i18n/dictionaries/profile';
 
 export const ActiveBoard = () => {
+    const { resolvedTheme } = useTheme();
+    const t = useT(profileDict).activity;
     // Generate mock data for the last 365 days
     const generateMockData = () => {
         const data: Array<{ date: string; count: number }> = [];
@@ -27,7 +32,7 @@ export const ActiveBoard = () => {
     const activityData = generateMockData();
 
     const panelColors = {
-        0: '#EBEDF0',
+        0: resolvedTheme === 'dark' ? '#2C2C2E' : '#EBEDF0',
         2: '#9BE9A8',
         4: '#40C463',
         8: '#30A14E',
@@ -36,8 +41,8 @@ export const ActiveBoard = () => {
 
     return (
         <div className="w-full px-4 pb-4">
-            <div className="w-full bg-[#F8F9FA] rounded-3xl p-3 py-3">
-                <h3 className="text-lg font-semibold text-[#1C1C1E]">Activity Heatmap</h3>
+            <div className="w-full bg-surface rounded-3xl p-3 py-3">
+                <h3 className="text-lg font-semibold text-foreground">{t.title}</h3>
 
                 <div className="overflow-x-auto">
                     <HeatMap
@@ -49,9 +54,9 @@ export const ActiveBoard = () => {
                         space={3}
                         legendCellSize={0}
                         panelColors={panelColors}
-                        weekLabels={['S', 'M', 'T', 'W', 'T', 'F', 'S']}
-                        monthLabels={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']}
-                        style={{ color: '#9CA3AF' }}
+                        weekLabels={t.weekLabels}
+                        monthLabels={t.monthLabels}
+                        style={{ color: 'var(--muted-foreground)' }}
                         rectProps={{
                             rx: 2,
                         }}
@@ -60,7 +65,7 @@ export const ActiveBoard = () => {
 
                 {/* Custom Legend */}
                 {/* <div className="flex items-center gap-2 mt-6 justify-end">
-                    <span className="text-xs text-gray-400">Less</span>
+                    <span className="text-xs text-muted-foreground">{t.less}</span>
                     <div className="flex gap-1">
                         {Object.values(panelColors).map((color, index) => (
                             <div
@@ -74,7 +79,7 @@ export const ActiveBoard = () => {
                             />
                         ))}
                     </div>
-                    <span className="text-xs text-gray-400">More</span>
+                    <span className="text-xs text-muted-foreground">{t.more}</span>
                 </div> */}
             </div>
         </div>

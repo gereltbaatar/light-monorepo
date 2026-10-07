@@ -3,11 +3,13 @@
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { Camera, Check } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
+import { profileDict } from "@/lib/i18n/dictionaries/profile";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import {
     updateAvatarUrl,
@@ -28,6 +30,7 @@ export const GeneralSettingsForm = ({
     email,
     avatarUrl,
 }: GeneralSettingsFormProps) => {
+    const t = useT(profileDict).general;
     const [name, setName] = useState(initialDisplayName);
     const [avatar, setAvatar] = useState(avatarUrl);
     const [isUploading, startUpload] = useTransition();
@@ -43,9 +46,9 @@ export const GeneralSettingsForm = ({
         if ("error" in state) {
             toast.error(state.error);
         } else {
-            toast.success("Profile updated");
+            toast.success(t.profileUpdated);
         }
-    }, [state]);
+    }, [state, t]);
 
     const isUnchanged = name.trim() === initialDisplayName.trim();
 
@@ -59,11 +62,11 @@ export const GeneralSettingsForm = ({
         if (!file) return;
 
         if (!file.type.startsWith("image/")) {
-            toast.error("Please pick an image file");
+            toast.error(t.pickImage);
             return;
         }
         if (file.size > MAX_AVATAR_BYTES) {
-            toast.error("Image must be 2 MB or smaller");
+            toast.error(t.imageTooLarge);
             return;
         }
 
@@ -76,10 +79,10 @@ export const GeneralSettingsForm = ({
                     return;
                 }
                 setAvatar(url);
-                toast.success("Profile picture updated");
+                toast.success(t.avatarUpdated);
             } catch (err) {
                 toast.error(
-                    err instanceof Error ? err.message : "Upload failed"
+                    err instanceof Error ? err.message : t.uploadFailed
                 );
             }
         });
@@ -94,23 +97,22 @@ export const GeneralSettingsForm = ({
                     variant="ghost"
                     onClick={handleAvatarClick}
                     disabled={isUploading}
-                    aria-label="Change profile picture"
-                    className="relative w-24 h-24 p-0 rounded-full bg-[#E9ECEF] overflow-hidden disabled:opacity-60 hover:bg-[#E9ECEF]"
+                    aria-label={t.changePhoto}
+                    className="relative w-24 h-24 p-0 rounded-full bg-surface-2 overflow-hidden disabled:opacity-60 hover:bg-surface-2"
                 >
                     <Image
                         src={avatar}
-                        alt="Profile"
+                        alt={t.profileAlt}
                         width={96}
                         height={96}
                         className="rounded-full"
-                        unoptimized={avatar.startsWith("http")}
                     />
                     <span className="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center text-white">
                         <Camera className="w-6 h-6" />
                     </span>
                 </Button>
-                <p className="text-xs text-gray-400">
-                    {isUploading ? "Uploading…" : "Tap photo to change"}
+                <p className="text-xs text-muted-foreground">
+                    {isUploading ? t.uploading : t.tapToChange}
                 </p>
                 <Input
                     ref={fileInputRef}
@@ -123,8 +125,8 @@ export const GeneralSettingsForm = ({
 
             {/* Name (editable) */}
             <div className="space-y-2">
-                <Label htmlFor="display_name" className="text-sm text-gray-600">
-                    Name
+                <Label htmlFor="display_name" className="text-sm text-muted-foreground">
+                    {t.name}
                 </Label>
                 <div className="relative">
                     <Input
@@ -133,36 +135,36 @@ export const GeneralSettingsForm = ({
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="Your name"
+                        placeholder={t.namePlaceholder}
                         maxLength={60}
                         className={cn(
                             "h-12 pl-4 pr-14 rounded-2xl",
-                            "bg-[#F8F9FA] text-[#090909] placeholder:text-gray-400",
-                            "border-gray-200 focus:border-gray-400",
-                            "focus:ring-gray-300/50"
+                            "bg-surface text-foreground placeholder:text-muted-foreground",
+                            "border-border focus:border-ring",
+                            "focus:ring-ring/50"
                         )}
                     />
                     <Button
                         type="submit"
                         size="icon"
                         disabled={isPending || isUnchanged}
-                        aria-label="Save name"
+                        aria-label={t.saveName}
                         className={cn(
                             "absolute right-1.5 top-1/2 -translate-y-1/2",
                             "h-9 w-18 rounded-xl",
-                            "bg-[#090909] text-white hover:bg-[#1C1C1E]",
+                            "bg-primary text-primary-foreground hover:bg-primary/90",
                             "disabled:opacity-30"
                         )}
                     >
-                        <p className="text-sm font-semibold tracking-tight text-white">Save</p>
+                        <p className="text-sm font-semibold tracking-tight text-primary-foreground">{t.save}</p>
                     </Button>
                 </div>
             </div>
 
             {/* Email (read-only) */}
             <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm text-gray-600">
-                    Email
+                <Label htmlFor="email" className="text-sm text-muted-foreground">
+                    {t.email}
                 </Label>
                 <Input
                     id="email"
@@ -172,13 +174,13 @@ export const GeneralSettingsForm = ({
                     readOnly
                     className={cn(
                         "h-12 px-4 rounded-2xl",
-                        "bg-[#F1F3F5] text-gray-500",
-                        "border-gray-200",
+                        "bg-surface-2 text-muted-foreground",
+                        "border-border",
                         "disabled:opacity-100 disabled:cursor-not-allowed"
                     )}
                 />
-                <p className="text-xs text-gray-400 px-1">
-                    Email cannot be changed.
+                <p className="text-xs text-muted-foreground px-1">
+                    {t.emailLocked}
                 </p>
             </div>
 

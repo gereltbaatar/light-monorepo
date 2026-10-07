@@ -1,5 +1,6 @@
 import { Renderer, Program, Mesh, Triangle, Texture } from 'ogl';
 import { useEffect, useRef } from 'react';
+import { useTheme } from "@/components/ThemeProvider";
 
 interface EvilEyeProps {
   eyeColor?: string;
@@ -159,8 +160,14 @@ void main() {
   outerBgGlow = pow(outerBgGlow, 0.5);
   outerBgGlow *= 0.15;
 
-  vec3 color = uEyeColor * uIntensity * clamp(max(innerRing + innerEye, outerEyeGlow + outerBgGlow) - pupil, 0.0, 3.0);
+  float glow = clamp(max(innerRing + innerEye, outerEyeGlow + outerBgGlow) - pupil, 0.0, 3.0);
+  vec3 color = uEyeColor * uIntensity * glow;
   color += uBgColor;
+
+  // Additive glow vanishes on light backgrounds, so blend instead
+  if (dot(uBgColor, vec3(0.299, 0.587, 0.114)) > 0.5) {
+    color = mix(uBgColor, uEyeColor, clamp(glow * uIntensity, 0.0, 1.0));
+  }
 
   gl_FragColor = vec4(color, 1.0);
 }
@@ -176,9 +183,11 @@ export default function EvilEye({
   noiseScale = 1.0,
   pupilFollow = 1.0,
   flameSpeed = 1.0,
-  backgroundColor = '#000000'
+  backgroundColor
 }: EvilEyeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { resolvedTheme } = useTheme();
+  const bgColor = backgroundColor ?? (resolvedTheme === 'light' ? '#ffffff' : '#0b0b0c');
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -245,7 +254,7 @@ export default function EvilEye({
         uPupilFollow: { value: pupilFollow },
         uFlameSpeed: { value: flameSpeed },
         uEyeColor: { value: hexToVec3(eyeColor) },
-        uBgColor: { value: hexToVec3(backgroundColor) }
+        uBgColor: { value: hexToVec3(bgColor) }
       }
     });
 
@@ -272,7 +281,7 @@ export default function EvilEye({
       container.removeChild(gl.canvas);
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [eyeColor, intensity, pupilSize, irisWidth, glowIntensity, scale, noiseScale, pupilFollow, flameSpeed, backgroundColor]);
+  }, [eyeColor, intensity, pupilSize, irisWidth, glowIntensity, scale, noiseScale, pupilFollow, flameSpeed, bgColor]);
 
   return <div ref={containerRef} className="w-full h-full" />;
 }

@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getT } from "@/lib/i18n/server";
+import { profileDict } from "@/lib/i18n/dictionaries/profile";
 
 export type ProfileActionResult = { error: string } | { ok: true };
 
@@ -9,13 +11,14 @@ export async function updateDisplayName(
     _prev: ProfileActionResult | undefined,
     formData: FormData
 ): Promise<ProfileActionResult> {
+    const t = (await getT(profileDict)).errors;
     const raw = String(formData.get("display_name") ?? "").trim();
 
     if (raw.length === 0) {
-        return { error: "Name cannot be empty" };
+        return { error: t.nameEmpty };
     }
     if (raw.length > 60) {
-        return { error: "Name must be 60 characters or fewer" };
+        return { error: t.nameTooLong };
     }
 
     const supabase = await createClient();
@@ -24,7 +27,7 @@ export async function updateDisplayName(
     } = await supabase.auth.getUser();
 
     if (!user) {
-        return { error: "Not signed in" };
+        return { error: t.notSignedIn };
     }
 
     const { error } = await supabase
@@ -45,8 +48,9 @@ export async function updateDisplayName(
 export async function updateAvatarUrl(
     url: string
 ): Promise<ProfileActionResult> {
+    const t = (await getT(profileDict)).errors;
     if (!url.startsWith("https://res.cloudinary.com/")) {
-        return { error: "Invalid avatar URL" };
+        return { error: t.invalidAvatar };
     }
 
     const supabase = await createClient();
@@ -55,7 +59,7 @@ export async function updateAvatarUrl(
     } = await supabase.auth.getUser();
 
     if (!user) {
-        return { error: "Not signed in" };
+        return { error: t.notSignedIn };
     }
 
     const { error } = await supabase

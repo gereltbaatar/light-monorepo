@@ -3,3 +3,4 @@ export * from "./UserInfo";
 export * from "./Settings";
 export * from "./ActiveBoard";
 export * from "./SettingsPageHeader";
+export * from "./AiFeatureToggles";

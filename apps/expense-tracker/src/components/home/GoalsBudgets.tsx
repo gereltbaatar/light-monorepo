@@ -1,24 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { GoalCard, BudgetCard } from "./";
+import { useRouter } from "next/navigation";
+// Imported directly rather than through the barrel: this is a client
+// component, and the barrel also re-exports server-only modules (Transactions,
+// TotalBalance) that would then be pulled into the browser bundle.
+import { GoalCard } from "./GoalCard";
+import { BudgetCard } from "./BudgetCard";
 import { AddNewDrawer } from "./AddNewDrawer";
-import { NewGoalDrawer } from "./NewGoalDrawer";
 import { NewBudgetDrawer } from "./NewBudgetDrawer";
+import type { Goal } from "@/lib/goals";
 
 // Time vaul needs to play its exit animation before opening the next drawer.
 // Without this delay two drawers fight over the body-scroll lock and focus
 // trap (Radix Dialog allows only one open at a time).
 const DRAWER_TRANSITION_MS = 220;
 
-export const GoalsBudgets = () => {
+export const GoalsBudgets = ({ goals }: { goals: Goal[] }) => {
+    const router = useRouter();
     const [pickerOpen, setPickerOpen] = useState(false);
-    const [goalFormOpen, setGoalFormOpen] = useState(false);
     const [budgetFormOpen, setBudgetFormOpen] = useState(false);
 
     const openGoalForm = () => {
         setPickerOpen(false);
-        setTimeout(() => setGoalFormOpen(true), DRAWER_TRANSITION_MS);
+        router.push("/goals/new");
     };
 
     const openBudgetForm = () => {
@@ -35,13 +40,12 @@ export const GoalsBudgets = () => {
                 onPickBudget={openBudgetForm}
             />
 
-            <NewGoalDrawer open={goalFormOpen} onOpenChange={setGoalFormOpen} />
             <NewBudgetDrawer open={budgetFormOpen} onOpenChange={setBudgetFormOpen} />
 
-            <GoalCard />
+            {goals.map((goal) => (
+                <GoalCard key={goal.id} goal={goal} />
+            ))}
             <BudgetCard />
-            <GoalCard />
-            <GoalCard />
         </div>
     );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Bell, Globe, Palette, Settings } from "lucide-react";
+import { ChevronRight, Bell, Bot, Globe, LayoutGrid, Orbit, Palette, Settings, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -13,7 +13,7 @@ interface SettingItemProps {
         path: string;
         hasToggle?: boolean;
         isToggled?: boolean;
-        rightLabel?: string; // New: Label to show on the right side (e.g., "MN, EN")
+        rightLabel?: React.ReactNode; // New: Label to show on the right side (e.g., "MN, EN")
     };
 }
 
@@ -41,6 +41,14 @@ export const SettingsItem = ({ setting }: SettingItemProps) => {
                 return <Globe className="w-5 h-5" />;
             case "/theme.svg":
                 return <Palette className="w-5 h-5" />;
+            case "/categories.svg":
+                return <LayoutGrid className="w-5 h-5" />;
+            case "/ai.svg":
+                return <Bot className="w-5 h-5" />;
+            case "/ai-usage.svg":
+                return <Sparkles className="w-5 h-5" />;
+            case "/orb.svg":
+                return <Orbit className="w-5 h-5" />;
             case "/settings.svg":
                 return <Settings className="w-5 h-5" />;
             default:
@@ -53,19 +61,19 @@ export const SettingsItem = ({ setting }: SettingItemProps) => {
             onClick={!setting.hasToggle ? handleClick : undefined}
             className={`
                 w-full px-4 py-4 flex items-center justify-between h-[60px]
-                ${!setting.hasToggle ? 'cursor-pointer hover:bg-gray-100 active:bg-gray-200' : ''}
+                ${!setting.hasToggle ? 'cursor-pointer hover:bg-surface-2 active:bg-surface-2' : ''}
                 transition-colors
             `}
         >
             {/* Left side: Icon + Text */}
             <div className="flex items-center gap-3">
                 {setting.icon && (
-                    <div className="text-gray-600">
+                    <div className="text-muted-foreground">
                         {getIcon()}
                     </div>
                 )}
                 <div className="flex flex-col">
-                    <p className="text-base font-medium text-gray-900">{setting.title}</p>
+                    <p className="text-base font-medium text-foreground">{setting.title}</p>
                 </div>
             </div>
 
@@ -77,7 +85,7 @@ export const SettingsItem = ({ setting }: SettingItemProps) => {
                         onClick={handleToggle}
                         className={`
                             relative w-12 h-7 rounded-full transition-colors duration-200 ease-in-out
-                            ${isToggled ? 'bg-green-500' : 'bg-gray-300'}
+                            ${isToggled ? 'bg-success' : 'bg-input'}
                         `}
                     >
                         <div
@@ -92,9 +100,9 @@ export const SettingsItem = ({ setting }: SettingItemProps) => {
                     // Label + Chevron (for navigation)
                     <>
                         {setting.rightLabel && (
-                            <p className="text-sm font-medium text-gray-500">{setting.rightLabel}</p>
+                            <p className="text-sm font-medium text-muted-foreground">{setting.rightLabel}</p>
                         )}
-                        <ChevronRight className="w-5 h-5 text-gray-400" strokeWidth={2} />
+                        <ChevronRight className="w-5 h-5 text-muted-foreground" strokeWidth={2} />
                     </>
                 )}
             </div>

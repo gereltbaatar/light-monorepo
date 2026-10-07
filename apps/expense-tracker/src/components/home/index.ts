@@ -1,5 +1,6 @@
 export * from "./TotalBalance";
 export * from "./GoalsBudgets";
+export * from "./Goals";
 export * from "./GoalCard";
 export * from "./BudgetCard";
 export * from "./Bank";

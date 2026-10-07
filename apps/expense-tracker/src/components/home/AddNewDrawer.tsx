@@ -9,6 +9,8 @@ import {
     DrawerTrigger,
 } from "@workspace/ui/components/drawer";
 import { Button } from "@workspace/ui/components/button";
+import { useT } from "@/lib/i18n/client";
+import { homeDict } from "@/lib/i18n/dictionaries/home";
 
 interface AddNewDrawerProps {
     open: boolean;
@@ -23,29 +25,31 @@ export const AddNewDrawer = ({
     onPickGoal,
     onPickBudget,
 }: AddNewDrawerProps) => {
+    const t = useT(homeDict);
+
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
             <DrawerTrigger asChild>
                 <Button
                     type="button"
-                    aria-label="Add goal or budget"
-                    className="h-[220px] w-10 shrink-0 bg-white p-0"
+                    aria-label={t.addNew.trigger}
+                    className="h-[220px] w-10 shrink-0 bg-background hover:bg-background p-0"
                 >
-                    <div className="border-3 h-full w-full border-dashed border-[#DEE2E6] flex items-center justify-center rounded-xl hover:border-[#343A40] transition-colors">
-                        <Plus color="#343A40" size={20} strokeWidth={3} />
+                    <div className="border-3 h-full w-full border-dashed border-border flex items-center justify-center rounded-xl hover:border-foreground transition-colors">
+                        <Plus className="text-foreground" size={20} strokeWidth={3} />
                     </div>
                 </Button>
             </DrawerTrigger>
 
-            <DrawerContent className="bg-white border-0 rounded-t-[28px] *:first:hidden">
+            <DrawerContent className="bg-background border-0 rounded-t-[28px] *:first:hidden">
                 <div className="mx-auto w-full max-w-[430px]">
                     <div className="flex justify-center pt-3 pb-1">
-                        <div className="h-1 w-10 rounded-full bg-[#E5E5EA]" />
+                        <div className="h-1 w-10 rounded-full bg-surface-2" />
                     </div>
 
                     <div className="px-5 pt-4 pb-5">
-                        <DrawerTitle className="text-2xl font-bold text-[#1C1C1E] tracking-tight">
-                            Add new
+                        <DrawerTitle className="text-2xl font-bold text-foreground tracking-tight">
+                            {t.addNew.title}
                         </DrawerTitle>
                     </div>
 
@@ -54,12 +58,12 @@ export const AddNewDrawer = ({
                             type="button"
                             variant="ghost"
                             onClick={onPickGoal}
-                            aria-label="New goal"
+                            aria-label={t.addNew.goal}
                             className="relative w-[170px] h-[170px] p-0 rounded-4xl overflow-hidden bg-[#FFF3E0] hover:bg-[#FFE0B2] active:scale-[0.98] transition-all"
                         >
                             <Image
                                 src="/BlackHole.jpg"
-                                alt="New goal"
+                                alt={t.addNew.goal}
                                 fill
                                 sizes="170px"
                                 className="object-cover"
@@ -70,7 +74,7 @@ export const AddNewDrawer = ({
                             type="button"
                             variant="ghost"
                             onClick={onPickBudget}
-                            aria-label="New budget"
+                            aria-label={t.addNew.budget}
                             className="relative w-[170px] h-[170px] p-0 rounded-4xl overflow-hidden bg-[#E3F2FD] hover:bg-[#BBDEFB] active:scale-[0.98] transition-all"
                         >
                             <video

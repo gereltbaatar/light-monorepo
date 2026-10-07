@@ -3,19 +3,22 @@
 import { Ellipsis } from "lucide-react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { useT } from "@/lib/i18n/client";
+import { homeDict } from "@/lib/i18n/dictionaries/home";
 
 export const BudgetCard = () => {
+    const t = useT(homeDict);
     const percentage = 20;
 
     return (
-        <div className="h-[220px] w-[155px] bg-[#F8F9FA] shrink-0 rounded-3xl">
+        <div className="h-[220px] w-[155px] bg-surface shrink-0 rounded-3xl">
             <div className="w-full h-full px-3 py-3 flex flex-col">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4">
-                    <p className="text-lg font-bold text-[#343A40] tracking-tight">
-                        Budget
+                    <p className="text-lg font-bold text-foreground tracking-tight">
+                        {t.budget}
                     </p>
-                    <Ellipsis color="#343A40" size={24} strokeWidth={2} />
+                    <Ellipsis className="text-foreground" size={24} strokeWidth={2} />
                 </div>
 
                 {/* Circular Progress */}
@@ -25,9 +28,9 @@ export const BudgetCard = () => {
                         text={`${percentage}%`}
                         styles={buildStyles({
                             textSize: "28px",
-                            pathColor: "#343A40",
-                            textColor: "#343A40",
-                            trailColor: "rgba(52, 58, 64, 0.1)",
+                            pathColor: "var(--foreground)",
+                            textColor: "var(--foreground)",
+                            trailColor: "color-mix(in oklab, var(--foreground) 10%, transparent)",
                             strokeLinecap: "round",
                         })}
                         strokeWidth={8}
@@ -36,10 +39,10 @@ export const BudgetCard = () => {
 
                 {/* Goal Info */}
                 <div className="text-center mt-auto">
-                    <p className="text-sm font-semibold text-[#343A40] mb-0.5">
-                        New Bicycle
+                    <p className="text-sm font-semibold text-foreground mb-0.5">
+                        {t.budgetSample}
                     </p>
-                    <p className="text-xs text-[#8E8E93]">1 Dec 2023</p>
+                    <p className="text-xs text-muted-foreground">1 Dec 2023</p>
                 </div>
             </div>
         </div>

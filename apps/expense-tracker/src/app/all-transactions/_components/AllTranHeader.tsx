@@ -3,8 +3,11 @@
 import { ChevronLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useT } from "@/lib/i18n/client";
+import { transactionsDict } from "@/lib/i18n/dictionaries/transactions";
 
 export const AllTranHeader = () => {
+    const t = useT(transactionsDict);
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -33,22 +36,22 @@ export const AllTranHeader = () => {
 
     return (
         <div
-            className={`sticky top-0 bg-white z-40 px-4 py-4 transition-transform duration-300 ${isVisible ? "translate-y-0" : "-translate-y-full"
+            className={`sticky top-0 bg-background z-40 px-4 py-4 transition-transform duration-300 ${isVisible ? "translate-y-0" : "-translate-y-full"
                 }`}
         >
 
             <div className="flex items-center justify-center gap-4 relative">
                 <Link
                     href="/"
-                    className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition-colors absolute left-0"
+                    className="flex items-center justify-center w-10 h-10 rounded-full text-foreground hover:bg-surface-2 transition-colors absolute left-0"
                 >
-                    <ChevronLeft color="#1C1C1E" size={30} />
+                    <ChevronLeft size={30} />
                 </Link>
-                <h1 className="text-2xl font-bold text-[#1C1C1E]">
-                    All Transactions
+                <h1 className="text-2xl font-bold text-foreground">
+                    {t.allTransactions}
                 </h1>
-                <div className="absolute right-0">
-                    <Sparkles color="#1C1C1E" size={26} />
+                <div className="absolute right-0 text-foreground">
+                    <Sparkles size={26} />
                 </div>
             </div>
         </div>

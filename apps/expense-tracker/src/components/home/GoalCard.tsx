@@ -1,47 +1,57 @@
-"use client";
+import Image from "next/image";
+import Link from "next/link";
+import { PiggyBank } from "lucide-react";
+import { Progress } from "@workspace/ui/components/progress";
+import { moneyFormatter } from "../functions";
+import type { Goal } from "@/lib/goals";
+import { useT } from "@/lib/i18n/client";
+import { homeDict } from "@/lib/i18n/dictionaries/home";
 
-import { Ellipsis } from "lucide-react";
-import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
+export const goalPercent = (goal: Pick<Goal, "saved_amount" | "target_amount">) =>
+    Math.max(0, Math.min(100, Math.round((goal.saved_amount / goal.target_amount) * 100)));
 
-export const GoalCard = () => {
-    const percentage = 20;
+export const GoalCard = ({ goal }: { goal: Goal }) => {
+    const t = useT(homeDict);
+    const percent = goalPercent(goal);
 
     return (
-        <div className="h-[220px] w-[155px] bg-[#F8F9FA] shrink-0 rounded-3xl">
-            <div className="w-full h-full px-3 py-3 flex flex-col">
-                {/* Header */}
-                <div className="flex items-center justify-between mb-4">
-                    <p className="text-lg font-bold text-[#343A40] tracking-tight">
-                        Goal
-                    </p>
-                    <Ellipsis color="#343A40" size={24} strokeWidth={2} />
+        <Link href={`/goals/${goal.id}`} className="shrink-0">
+            <div className="h-[220px] w-[155px] overflow-hidden rounded-3xl bg-surface flex flex-col">
+                <div className="relative h-[92px] w-full bg-surface-2">
+                    {goal.image_url ? (
+                        <Image
+                            src={goal.image_url}
+                            alt={goal.title}
+                            fill
+                            sizes="155px"
+                            className="object-cover"
+                        />
+                    ) : (
+                        <div className="flex h-full w-full items-center justify-center">
+                            <PiggyBank className="h-8 w-8 text-muted-foreground" />
+                        </div>
+                    )}
+                    {goal.status === "completed" && (
+                        <span className="absolute left-2 top-2 rounded-full bg-[#00A86B] px-2 py-0.5 text-[10px] font-semibold text-white">
+                            {t.goalDone}
+                        </span>
+                    )}
                 </div>
 
-                {/* Circular Progress */}
-                <div className="w-26 h-26 mx-auto mb-3">
-                    <CircularProgressbar
-                        value={percentage}
-                        text={`${percentage}%`}
-                        styles={buildStyles({
-                            textSize: "28px",
-                            pathColor: "#343A40",
-                            textColor: "#343A40",
-                            trailColor: "rgba(52, 58, 64, 0.1)",
-                            strokeLinecap: "round",
-                        })}
-                        strokeWidth={8}
-                    />
-                </div>
-
-                {/* Goal Info */}
-                <div className="text-center mt-auto">
-                    <p className="text-sm font-semibold text-[#343A40] mb-0.5">
-                        New Bicycle
+                <div className="flex flex-1 flex-col px-3 py-3">
+                    <p className="truncate text-sm font-bold text-foreground tracking-tight">
+                        {goal.title}
                     </p>
-                    <p className="text-xs text-[#8E8E93]">1 Dec 2023</p>
+                    <p className="pt-0.5 text-2xl font-bold text-foreground">{percent}%</p>
+
+                    <div className="mt-auto space-y-1.5">
+                        <Progress value={percent} className="h-1.5 bg-foreground/10" />
+                        <p className="truncate text-[11px] text-muted-foreground">
+                            {moneyFormatter(goal.saved_amount)} / {moneyFormatter(goal.target_amount)}
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };

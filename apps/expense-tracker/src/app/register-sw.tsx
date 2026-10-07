@@ -10,12 +10,9 @@ export function RegisterServiceWorker() {
       process.env.NODE_ENV === "production"
     ) {
       navigator.serviceWorker
-        .register("/sw.js")
-        .then((registration) => {
-          console.log("Service Worker registered:", registration);
-        })
+        .register("/sw.js", { updateViaCache: "none" })
         .catch((error) => {
-          console.log("Service Worker registration failed:", error);
+          console.error("Service Worker registration failed:", error);
         });
     }
   }, []);

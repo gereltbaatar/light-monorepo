@@ -3,27 +3,31 @@
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useT } from "@/lib/i18n/client";
+import { homeDict } from "@/lib/i18n/dictionaries/home";
 
 export const Bank = () => {
+    const t = useT(homeDict);
+
     return (
         <div className="w-full px-4 pt-4">
-            <div className="relative w-full h-[150px] bg-[#1C1C1E] rounded-3xl overflow-hidden">
+            <div className="relative w-full h-[150px] bg-[#1C1C1E] rounded-3xl overflow-hidden dark:ring-1 dark:ring-border">
                 {/* Content */}
                 <div className="relative z-10 w-full h-full px-5 py-5 flex flex-col justify-between">
                     {/* Text Content */}
                     <div>
                         <h2 className="text-xl font-bold text-white mb-1">
-                            Add bank account
+                            {t.bank.title}
                         </h2>
                         <h2 className="text-xl font-bold text-white">
-                            track your spending
+                            {t.bank.subtitle}
                         </h2>
                     </div>
 
                     {/* Share Button */}
                     <button className="flex items-center gap-1 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-full w-fit">
                         <span className="text-sm text-white/70 font-medium">
-                            Track
+                            {t.bank.cta}
                         </span>
                         <ChevronRight className="w-4 h-4 text-white/70" />
                     </button>

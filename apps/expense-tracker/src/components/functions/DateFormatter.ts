@@ -3,6 +3,9 @@
  * Examples: 'April 3', '4-р сарын 3'
  */
 
+import { DEFAULT_LOCALE, INTL_LOCALE, type Locale } from "@/lib/i18n/config";
+import { homeDict } from "@/lib/i18n/dictionaries/home";
+
 type DateInput = Date | string | number;
 
 interface DateFormatOptions {
@@ -169,6 +172,54 @@ export function formatDateRange(
 
   // Different months or years
   return `${formatDateWithYear(startDate, options)} - ${formatDateWithYear(endDate, options)}`;
+}
+
+/**
+ * Day label used as a transaction-list heading: "Today", "Yesterday", or an
+ * absolute date. Compares calendar days in local time, so a timestamp late in
+ * the evening still reads as "Today" rather than falling to the date branch.
+ */
+export function getDayLabel(
+    input: DateInput,
+    locale: Locale = DEFAULT_LOCALE
+): string {
+    const date = parseDate(input);
+    const now = new Date();
+
+    const startOfDay = (d: Date) =>
+        new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+
+    const dayDiff = Math.round(
+        (startOfDay(now) - startOfDay(date)) / 86_400_000
+    );
+
+    if (dayDiff === 0) return homeDict[locale].today;
+    if (dayDiff === 1) return homeDict[locale].yesterday;
+
+    return date.toLocaleDateString(INTL_LOCALE[locale], {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    });
+}
+
+/**
+ * Groups items by their day label, preserving input order within each group.
+ * Callers pass already-sorted transactions, so the resulting group order
+ * follows the sort (newest first).
+ */
+export function groupByDateLabel<T extends { timestamp: string }>(
+    items: T[],
+    locale: Locale = DEFAULT_LOCALE
+): Record<string, T[]> {
+    const grouped: Record<string, T[]> = {};
+
+    for (const item of items) {
+        const label = getDayLabel(item.timestamp, locale);
+        (grouped[label] ??= []).push(item);
+    }
+
+    return grouped;
 }
 
 /**

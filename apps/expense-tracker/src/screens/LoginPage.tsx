@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useEffect, useTransition } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import EvilEye from "@/components/EvilEye";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,22 +10,25 @@ import { GoogleSvg } from "@/components/ui/svg";
 import { cn } from "@/lib/utils";
 import { EmailLoginForm } from "@/app/login/_components";
 import { signInWithGoogle } from "@/app/_actions/auth";
+import { useT } from "@/lib/i18n/client";
+import { authDict } from "@/lib/i18n/dictionaries/auth";
 
 function LoginContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
+    const t = useT(authDict);
     const provider = searchParams.get("provider");
     const oauthError = searchParams.get("error");
     const [isOAuthPending, startOAuth] = useTransition();
 
     useEffect(() => {
         if (oauthError) {
-            toast.error("Sign-in failed. Please try again.");
+            toast.error(t.signInFailed);
             const url = new URL(window.location.href);
             url.searchParams.delete("error");
             router.replace(url.pathname + url.search);
         }
-    }, [oauthError, router]);
+    }, [oauthError, router, t]);
 
     const handleGoogleLogin = () => {
         startOAuth(async () => {
@@ -37,7 +40,7 @@ function LoginContent() {
     };
 
     return (
-        <div className="relative w-full min-h-screen max-w-[430px] mx-auto bg-black text-white flex flex-col">
+        <div className="relative w-full min-h-screen max-w-[430px] mx-auto bg-background text-foreground flex flex-col">
 
             {/* Evil Eye Background */}
             <div className="absolute top-20 left-0 right-0 flex items-center justify-center">
@@ -52,7 +55,6 @@ function LoginContent() {
                         noiseScale={1}
                         pupilFollow={1}
                         flameSpeed={1}
-                        backgroundColor="#000000"
                     />
                 </div>
             </div>
@@ -67,12 +69,12 @@ function LoginContent() {
                     {/* Title */}
                     <div className="text-center mb-12 px-6">
                         <h1 className="text-5xl font-bold mb-2">
-                            {provider === "email" ? "Sign In" : "Welcome"}
+                            {provider === "email" ? t.signIn : t.welcome}
                         </h1>
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-muted-foreground text-sm">
                             {provider === "email"
-                                ? "Enter your credentials to continue"
-                                : "Choose your preferred sign-in method"}
+                                ? t.enterCredentials
+                                : t.chooseMethod}
                         </p>
                     </div>
 
@@ -85,10 +87,10 @@ function LoginContent() {
                                 onClick={() => router.push("/login?provider=email")}
                                 className={cn(
                                     "w-full rounded-full py-6 text-base font-semibold",
-                                    "bg-white text-black hover:bg-gray-100"
+                                    "bg-primary text-primary-foreground hover:bg-primary/90"
                                 )}
                             >
-                                Continue with Email
+                                {t.continueWithEmail}
                             </Button>
 
                             <Button
@@ -96,25 +98,25 @@ function LoginContent() {
                                 disabled={isOAuthPending}
                                 className={cn(
                                     "w-full rounded-full py-6 text-base font-semibold",
-                                    "bg-[#2C2C2E] text-white hover:bg-[#3A3A3C]",
+                                    "bg-surface-2 text-foreground hover:bg-surface-2/80",
                                     "disabled:opacity-60"
                                 )}
                             >
                                 <GoogleSvg size={24} />
-                                {isOAuthPending ? "Redirecting…" : "Continue with Google"}
+                                {isOAuthPending ? t.redirecting : t.continueWithGoogle}
                             </Button>
                         </div>
                     )}
 
                     {/* Footer Links */}
                     <div className="text-center mt-8 px-6">
-                        <p className="text-gray-400 text-sm">
-                            Don&apos;t have an account?{" "}
+                        <p className="text-muted-foreground text-sm">
+                            {t.noAccount}{" "}
                             <Link
                                 href="/register"
-                                className="text-white font-semibold hover:underline transition-all"
+                                className="text-foreground font-semibold hover:underline transition-all"
                             >
-                                Sign Up
+                                {t.signUp}
                             </Link>
                         </p>
                     </div>
@@ -126,7 +128,7 @@ function LoginContent() {
 
 export default function LoginPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-black" />}>
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
             <LoginContent />
         </Suspense>
     );

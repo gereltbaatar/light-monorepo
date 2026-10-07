@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getCurrentProfile, getDisplayName } from "@/lib/profile";
+import { getT } from "@/lib/i18n/server";
+import { profileDict } from "@/lib/i18n/dictionaries/profile";
 
 
 export const ProfileHeader = async () => {
@@ -8,6 +10,7 @@ export const ProfileHeader = async () => {
     const name = getDisplayName(profile);
     const email = profile?.email ?? "";
     const avatar = profile?.avatar_url || "/profile_image.jpg";
+    const t = (await getT(profileDict)).activity;
 
     return (
         <header className="w-full ">
@@ -15,24 +18,23 @@ export const ProfileHeader = async () => {
                 <div className="flex items-center justify-between">
                     {/* Greeting Section */}
                     <div className="flex flex-col justify-center">
-                        <h1 className="text-2xl font-bold text-[#090909] tracking-tight h-[30px]">
+                        <h1 className="text-2xl font-bold text-foreground tracking-tight h-[30px]">
                             {name}
                         </h1>
-                        <p className="text-2xl font-bold text-[#A6A6A6] tracking-tight h-[30px]">
+                        <p className="text-2xl font-bold text-muted-foreground tracking-tight h-[30px]">
                             {email}
                         </p>
                     </div>
 
                     {/* Profile Picture */}
                     <Link href="/profile" className="relative">
-                        <div className="w-14 h-14 rounded-full bg-[#E9ECEF] overflow-hidden">
+                        <div className="w-14 h-14 rounded-full bg-surface-2 overflow-hidden">
                             <Image
                                 src={avatar}
-                                alt="Profile"
+                                alt={t.avatarAlt}
                                 width={56}
                                 height={56}
                                 className="rounded-full"
-                                unoptimized={avatar.startsWith("http")}
                             />
                         </div>
                     </Link>

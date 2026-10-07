@@ -1,14 +1,17 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
+import { useT } from "@/lib/i18n/client";
+import { authDict } from "@/lib/i18n/dictionaries/auth";
 import { signInWithEmail, type AuthActionResult } from "@/app/_actions/auth";
 
 export const EmailLoginForm = () => {
+    const t = useT(authDict);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -34,15 +37,15 @@ export const EmailLoginForm = () => {
         const newErrors = { email: "", password: "" };
 
         if (!email) {
-            newErrors.email = "Email is required";
+            newErrors.email = t.emailRequired;
         } else if (!validateEmail(email)) {
-            newErrors.email = "Please enter a valid email";
+            newErrors.email = t.emailInvalid;
         }
 
         if (!password) {
-            newErrors.password = "Password is required";
+            newErrors.password = t.passwordRequired;
         } else if (password.length < 6) {
-            newErrors.password = "Password must be at least 6 characters";
+            newErrors.password = t.passwordTooShort;
         }
 
         setClientErrors(newErrors);
@@ -66,17 +69,17 @@ export const EmailLoginForm = () => {
                             setEmail(e.target.value);
                             setClientErrors((prev) => ({ ...prev, email: "" }));
                         }}
-                        placeholder="Enter your email"
+                        placeholder={t.emailPlaceholder}
                         className={cn(
                             "h-12 px-4 rounded-full",
-                            "bg-[#1C1C1E] text-white placeholder:text-gray-500",
-                            "border-gray-700 focus:border-gray-500",
-                            "focus:ring-gray-600/50",
-                            clientErrors.email && "border-red-500 focus:border-red-500 focus:ring-red-500/50"
+                            "bg-surface text-foreground placeholder:text-muted-foreground",
+                            "border-border focus:border-ring",
+                            "focus:ring-ring/50",
+                            clientErrors.email && "border-destructive focus:border-destructive focus:ring-destructive/50"
                         )}
                     />
                     {clientErrors.email && (
-                        <p className="text-sm text-red-500">{clientErrors.email}</p>
+                        <p className="text-sm text-destructive">{clientErrors.email}</p>
                     )}
                 </div>
 
@@ -92,19 +95,19 @@ export const EmailLoginForm = () => {
                                 setPassword(e.target.value);
                                 setClientErrors((prev) => ({ ...prev, password: "" }));
                             }}
-                            placeholder="Enter your password"
+                            placeholder={t.passwordPlaceholder}
                             className={cn(
                                 "h-12 px-4 pr-12 rounded-full",
-                                "bg-[#1C1C1E] text-white placeholder:text-gray-500",
-                                "border-gray-700 focus:border-gray-500",
-                                "focus:ring-gray-600/50",
-                                clientErrors.password && "border-red-500 focus:border-red-500 focus:ring-red-500/50"
+                                "bg-surface text-foreground placeholder:text-muted-foreground",
+                                "border-border focus:border-ring",
+                                "focus:ring-ring/50",
+                                clientErrors.password && "border-destructive focus:border-destructive focus:ring-destructive/50"
                             )}
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                         >
                             {showPassword ? (
                                 <EyeOff className="w-5 h-5" />
@@ -114,7 +117,7 @@ export const EmailLoginForm = () => {
                         </button>
                     </div>
                     {clientErrors.password && (
-                        <p className="text-sm text-red-500">{clientErrors.password}</p>
+                        <p className="text-sm text-destructive">{clientErrors.password}</p>
                     )}
                 </div>
 
@@ -124,11 +127,11 @@ export const EmailLoginForm = () => {
                     disabled={isPending}
                     className={cn(
                         "w-full rounded-full py-6 text-base font-semibold",
-                        "bg-white text-black hover:bg-gray-100",
+                        "bg-primary text-primary-foreground hover:bg-primary/90",
                         "disabled:opacity-60"
                     )}
                 >
-                    {isPending ? "Signing in…" : "Continue"}
+                    {isPending ? t.signingIn : t.continue}
                 </Button>
             </form>
         </div>

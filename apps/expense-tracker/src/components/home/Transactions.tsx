@@ -1,114 +1,28 @@
 import Link from "next/link";
 import { TransactionsList } from "./TransactionsList";
 import { TransactionsCardProps } from "./type";
+import { getTransactions } from "@/lib/transactions";
+import { groupByDateLabel } from "@/components/functions/DateFormatter";
+import { getLocale } from "@/lib/i18n/server";
+import { homeDict } from "@/lib/i18n/dictionaries/home";
 
-// Helper to generate dynamic dates (today, yesterday, 2 days ago)
-const getTodayTimestamp = (hours: number, minutes: number): string => {
-    const date = new Date();
-    date.setHours(hours, minutes, 0, 0);
-    return date.toISOString();
-};
+export const Transactions = async () => {
+    const transactions = await getTransactions(20);
+    const locale = await getLocale();
+    const t = homeDict[locale];
 
-const getYesterdayTimestamp = (hours: number, minutes: number): string => {
-    const date = new Date();
-    date.setDate(date.getDate() - 1);
-    date.setHours(hours, minutes, 0, 0);
-    return date.toISOString();
-};
+    const cards: TransactionsCardProps[] = transactions.map((tx) => ({
+        id: tx.id,
+        transactionType: tx.type,
+        title: tx.title,
+        amount: String(tx.amount),
+        category: tx.category,
+        // The list groups and formats by day; occurred_at is a date, so anchor
+        // it at local midnight rather than letting UTC shift it a day back.
+        timestamp: new Date(`${tx.occurred_at}T00:00:00`).toISOString(),
+    }));
 
-const getTwoDaysAgoTimestamp = (hours: number, minutes: number): string => {
-    const date = new Date();
-    date.setDate(date.getDate() - 2);
-    date.setHours(hours, minutes, 0, 0);
-    return date.toISOString();
-};
-
-// Mock transaction data (last 3 days with dynamic dates)
-const mockTransactions: TransactionsCardProps[] = [
-    // Today
-    {
-        transactionType: "expense",
-        title: "Grocery Shopping",
-        amount: "12450",
-        timestamp: getTodayTimestamp(14, 30)
-    },
-    {
-        transactionType: "expense",
-        title: "Coffee & Snacks",
-        amount: "3500",
-        timestamp: getTodayTimestamp(16, 45)
-    },
-    // Yesterday
-    {
-        transactionType: "income",
-        title: "Salary Payment",
-        amount: "450000",
-        timestamp: getYesterdayTimestamp(9, 0)
-    },
-    {
-        transactionType: "expense",
-        title: "Uber Ride",
-        amount: "8200",
-        timestamp: getYesterdayTimestamp(18, 20)
-    },
-    // 2 days ago
-    {
-        transactionType: "income",
-        title: "Freelance Work",
-        amount: "75000",
-        timestamp: getTwoDaysAgoTimestamp(11, 15)
-    },
-    {
-        transactionType: "expense",
-        title: "Restaurant Dinner",
-        amount: "18500",
-        timestamp: getTwoDaysAgoTimestamp(19, 30)
-    }
-];
-
-// Helper function to format date label
-const getDateLabel = (timestamp: string): string => {
-    const date = new Date(timestamp);
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    // Reset time to midnight for comparison
-    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const yesterdayOnly = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
-
-    if (dateOnly.getTime() === todayOnly.getTime()) {
-        return "Today";
-    } else if (dateOnly.getTime() === yesterdayOnly.getTime()) {
-        return "Yesterday";
-    } else {
-        // Format as "Jan 15, 2024"
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric'
-        });
-    }
-};
-
-// Group transactions by date
-const groupTransactionsByDate = (transactions: TransactionsCardProps[]) => {
-    const grouped: { [key: string]: TransactionsCardProps[] } = {};
-
-    transactions.forEach((transaction) => {
-        const dateLabel = getDateLabel(transaction.timestamp);
-        if (!grouped[dateLabel]) {
-            grouped[dateLabel] = [];
-        }
-        grouped[dateLabel].push(transaction);
-    });
-
-    return grouped;
-};
-
-export const Transactions = () => {
-    const groupedMap = groupTransactionsByDate(mockTransactions);
+    const groupedMap = groupByDateLabel(cards, locale);
     const grouped = Object.entries(groupedMap).map(([label, items]) => ({
         label,
         items,
@@ -118,18 +32,29 @@ export const Transactions = () => {
         <div className="px-4 pb-6">
             <div className="flex items-center justify-between mb-4">
                 {/* title */}
-                <h1 className="text-2xl font-bold text-[#1C1C1E]">Transactions</h1>
+                <h1 className="text-2xl font-bold text-foreground">{t.transactions.title}</h1>
 
                 {/* see all button */}
                 <Link
                     href="/all-transactions"
-                    className="text-[#1C1C1E] font-medium hover:text-[#1C1C1E]/80 transition-colors"
+                    className="text-foreground font-medium hover:text-foreground/80 transition-colors"
                 >
-                    See all
+                    {t.transactions.seeAll}
                 </Link>
             </div>
 
-            <TransactionsList grouped={grouped} />
+            {grouped.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-border px-6 py-10 text-center">
+                    <p className="text-base font-semibold text-foreground">
+                        {t.transactions.emptyTitle}
+                    </p>
+                    <p className="pt-1 text-sm text-muted-foreground">
+                        {t.transactions.emptyHint}
+                    </p>
+                </div>
+            ) : (
+                <TransactionsList grouped={grouped} />
+            )}
         </div>
     );
 };
