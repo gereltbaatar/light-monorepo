@@ -1,0 +1,10 @@
+# The Vercel CLI does not read .gitignore, so list what must not be uploaded.
+.turbo
+.env
+.env.*
+!.env.shared
+!.env.example
+*.tsbuildinfo
+
+# The Flutter app is built separately, never on Vercel.
+apps/expense_flutter

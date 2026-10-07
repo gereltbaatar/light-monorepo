@@ -4,6 +4,16 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "install:expense": "pnpm install --filter=light-monorepo --filter=expense-tracker...",
+    "dev:expense": "turbo run dev --filter=expense-tracker",
+    "dev:portfolio": "turbo run dev --filter=portfolio",
+    "dev:dotenv": "turbo run dev --filter=dotenv-management",
+    "dev:dotenv:next": "pnpm --filter=dotenv-management run dev:next",
+    "dev:docs": "turbo run dev --filter=docs",
+    "build:expense": "turbo run build --filter=expense-tracker",
+    "build:portfolio": "turbo run build --filter=portfolio",
+    "build:dotenv": "turbo run build --filter=dotenv-management",
+    "build:docs": "turbo run build --filter=docs",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"
