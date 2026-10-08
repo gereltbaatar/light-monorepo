@@ -1,0 +1,33 @@
+{
+  "name": "@workspace/sirius-core",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./supabase/*": "./src/supabase/*.ts",
+    "./domains/*": "./src/domains/*.ts",
+    "./lib/*": "./src/lib/*.ts",
+    "./components/*": "./src/components/*.tsx"
+  },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.103.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@types/node": "^20",
+    "@types/react": "19.2.2",
+    "eslint": "^9",
+    "next": "16.2.2",
+    "react": "19.2.4",
+    "typescript": "^5"
+  },
+  "peerDependencies": {
+    "next": "^16",
+    "react": "^19"
+  }
+}

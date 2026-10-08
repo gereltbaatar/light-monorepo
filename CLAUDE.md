@@ -5,15 +5,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Dev — expense-tracker, portfolio and dotenv-management ALL bind 3000, so run
+# Dev — sirius-money (expense tracker), portfolio and dotenv-management ALL bind 3000, so run
 # one at a time (docs is 3001). Root package.json defines these shortcuts:
-pnpm dev:expense       # expense-tracker  :3000
+pnpm dev:money         # sirius-money     :3000
 pnpm dev:portfolio     # portfolio        :3000
 pnpm dev:dotenv        # dotenv-management:3000 — runs fetch-env first
 pnpm dev:dotenv:next   # same, but SKIPS fetch-env (see below)
 pnpm dev:docs          # docs             :3001
 
-pnpm build:expense | build:portfolio | build:dotenv | build:docs
+pnpm build:money | build:portfolio | build:dotenv | build:docs
 
 pnpm lint                              # every app/package defines `lint`
 pnpm check-types                       # ONLY `docs` defines check-types
@@ -30,7 +30,7 @@ as `pnpm exec turbo dev --filter=<app>`.
 To run several apps at once, pass explicit ports directly to Next:
 
 ```bash
-cd apps/expense-tracker   && pnpm exec next dev -H 0.0.0.0    # 3000
+cd apps/sirius-money   && pnpm exec next dev -H 0.0.0.0    # 3000
 cd apps/docs              && pnpm exec next dev --port 3001
 cd apps/portfolio         && pnpm exec next dev --port 3002
 cd apps/dotenv-management && pnpm exec next dev --port 3003   # skips fetch-env
@@ -48,7 +48,7 @@ Turborepo + pnpm workspaces (`apps/*`, `packages/*`). Every app is Next.js 16.2 
 
 | App | Port | Notes |
 |-----|------|-------|
-| `expense-tracker` | 3000 | Supabase auth + data, `@base-ui/react`, framer-motion. `dev` binds `-H 0.0.0.0` for LAN/mobile testing. |
+| `sirius-money` | 3000 | The expense tracker, Sirius's money app. Supabase auth + data, `@base-ui/react`, framer-motion. `dev` binds `-H 0.0.0.0` for LAN/mobile testing. |
 | `dotenv-management` | 3000 | The secrets service. Supabase-backed, exposes the API the rest of the monorepo fetches env from. |
 | `portfolio` | 3000 | Static showcase, `transpilePackages: ["@workspace/ui"]`. |
 | `docs` | 3001 | Minimal; the only app with `check-types`. |
@@ -74,7 +74,7 @@ This is the least obvious part of the repo. `dotenv-management` is both an app a
 
 - Secrets live in Supabase behind `dotenv-management`'s API (`src/app/api/secrets|groups|export/`), keyed by **group name** and **environment** (`dev` | `test` | `prod`). `POST /api/secrets/fetch` takes `{ groups: string[], environment }` and returns the merged set.
 - `DOTENV_API_URL` is declared in root `.env.shared` and whitelisted in `turbo.json` `globalEnv`.
-- An app declares what it needs in `.dotenv-config.json` (e.g. expense-tracker asks for `["expense-tracker", "shared"]` @ `dev`).
+- An app declares what it needs in `.dotenv-config.json` (e.g. sirius-money asks for `["expense-tracker", "shared"]` @ `dev`).
 - **Only `dotenv-management` auto-fetches** — its `dev`/`build` scripts chain `pnpm run fetch-env`. Every other app expects a hand-populated `.env.local`. Declaring `.dotenv-config.json` in an app does *not* wire up fetching.
 - `fetch-env` reads `SECRET_GROUP` (default `default`), writes `.env.local`, and **prompts on stdin** on first run when `.env.local` is absent — so `pnpm build:dotenv` will hang in CI without a pre-seeded `.env.local`.
 
@@ -84,7 +84,7 @@ project in `apps/dotenv-management/.env.local` (`zslqegiyzypmqtrzqgki.supabase.c
 resolves — DNS returns NXDOMAIN, so the deleted-or-paused project fails as `TypeError: fetch
 failed`. Until someone points `.env.local` at a live project, use `pnpm dev:dotenv:next`
 (wraps the app's own `dev:next` script) to boot the UI without fetching secrets.
-Note this is a *different* Supabase project from expense-tracker's, which is healthy.
+Note this is a *different* Supabase project from sirius-money's, which is healthy.
 
 Resolution order: CLI args → `.dotenv-config.json` → `.env.local` → `.env.shared` → defaults.
 
@@ -96,7 +96,7 @@ Both Supabase apps follow the `@supabase/ssr` cookie-bridging split — do not m
 
 - `src/lib/supabase/server.ts` → `createServerClient` over `await cookies()`, async `createClient()`. Use in server components, server actions, route handlers.
 - `src/lib/supabase/client.ts` → `createBrowserClient`, sync. Client components only.
-- `src/middleware.ts` builds its own client over request/response cookies (it cannot use either helper) to refresh the session and gate routes. In expense-tracker, `PUBLIC_PREFIXES = ["/login", "/register", "/auth/callback"]`; everything else redirects to `/login`, and authed users are bounced off `/login`|`/register`.
+- `src/middleware.ts` builds its own client over request/response cookies (it cannot use either helper) to refresh the session and gate routes. In sirius-money, `PUBLIC_PREFIXES = ["/login", "/register", "/auth/callback"]`; everything else redirects to `/login`, and authed users are bounced off `/login`|`/register`.
 
 Auth env vars are `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 
@@ -106,7 +106,7 @@ Auth env vars are `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 vision in `src/app/_actions/parse-receipt.ts`, then saves the expense without
 asking — unless the read is suspect, in which case the form opens prefilled.
 
-Requires `GEMINI_API_KEY` in `apps/expense-tracker/.env` — a free AI Studio key,
+Requires `GEMINI_API_KEY` in `apps/sirius-money/.env` — a free AI Studio key,
 no credit card. **Never give it the `NEXT_PUBLIC_` prefix** — that ships the key
 to the browser. Without the key the action returns a plain "not configured" error
 and the manual form still works.
@@ -150,7 +150,7 @@ wrong number. Edit those rules only against real receipts.
 Two footguns this codebase has already been bitten by — keep both in mind when
 touching auth:
 
-- **Never derive a redirect origin from `new URL(request.url).origin`.** expense-tracker
+- **Never derive a redirect origin from `new URL(request.url).origin`.** sirius-money
   runs `next dev -H 0.0.0.0`, so `request.url` carries the *bind* address and users get
   redirected to an unreachable `http://0.0.0.0:3000`. The same breaks behind a proxy in
   production. Use `x-forwarded-host`/`x-forwarded-proto`, then `host` — see
@@ -163,7 +163,7 @@ touching auth:
 
 ### Transactions data
 
-Schema lives in `apps/expense-tracker/supabase-transactions.sql` — run it by hand in
+Schema lives in `apps/sirius-money/supabase-transactions.sql` — run it by hand in
 the Supabase SQL Editor (as with `supabase-schema.sql`; nothing auto-pushes). It
 depends on `set_updated_at()` from that earlier file, so run that one first.
 
@@ -182,7 +182,7 @@ a `next/headers` error whose stack points at `supabase/server.ts` rather than at
 real culprit. Client components under `components/home/` must import siblings by path
 (see `GoalsBudgets.tsx`), never through `./`.
 
-### expense-tracker layout convention
+### sirius-money layout convention
 
 Routes in `src/app/` stay thin and delegate to a screen component in `src/screens/` (`HomePage.tsx`, `ProfilePage.tsx`, …). Route-local components live in colocated `_components/` folders; server actions in `src/app/_actions/*.ts` with `"use server"`. Actions are written for `useActionState` — signature `(prevState, formData)`, returning `{ error: string }` or a success shape rather than throwing.
 
@@ -194,7 +194,7 @@ Every app's `AGENTS.md` (surfaced via a one-line `CLAUDE.md` that just does `@AG
 
 Concretely: `cookies()` and `headers()` are async, route params are Promises. Verify React 19 behavior rather than assuming React 18.
 
-Those per-app files contain *only* this rule — they are not app architecture docs. For app specifics read the actual code, plus `apps/dotenv-management/{SETUP,DEPLOYMENT,ENV_MANAGEMENT}.md` and `apps/expense-tracker/AUTH_SETUP.md`.
+Those per-app files contain *only* this rule — they are not app architecture docs. For app specifics read the actual code, plus `apps/dotenv-management/{SETUP,DEPLOYMENT,ENV_MANAGEMENT}.md` and `apps/sirius-money/AUTH_SETUP.md`.
 
 ## Deployment
 

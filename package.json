@@ -4,16 +4,24 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "install:expense": "pnpm install --filter=light-monorepo --filter=expense-tracker...",
-    "dev:expense": "turbo run dev --filter=expense-tracker",
+    "install:money": "pnpm install --filter=light-monorepo --filter=sirius-money...",
+    "dev:money": "turbo run dev --filter=sirius-money",
+    "dev:do": "turbo run dev --filter=sirius-do",
     "dev:portfolio": "turbo run dev --filter=portfolio",
     "dev:dotenv": "turbo run dev --filter=dotenv-management",
     "dev:dotenv:next": "pnpm --filter=dotenv-management run dev:next",
     "dev:docs": "turbo run dev --filter=docs",
-    "build:expense": "turbo run build --filter=expense-tracker",
+    "dev:sirius": "turbo run dev --filter=sirius --filter=sirius-do --filter=sirius-fit --filter=sirius-money",
+    "build:sirius": "turbo run build --filter=sirius --filter=sirius-do --filter=sirius-fit --filter=sirius-money",
+    "build:money": "turbo run build --filter=sirius-money",
     "build:portfolio": "turbo run build --filter=portfolio",
     "build:dotenv": "turbo run build --filter=dotenv-management",
     "build:docs": "turbo run build --filter=docs",
+    "deploy:life": "cd apps/sirius && vercel deploy --prod",
+    "deploy:do": "cd apps/sirius-do && vercel deploy --prod",
+    "deploy:fit": "cd apps/sirius-fit && vercel deploy --prod",
+    "deploy:money": "cd apps/sirius-money && vercel deploy --prod",
+    "deploy:sirius": "pnpm deploy:life && pnpm deploy:do && pnpm deploy:fit && pnpm deploy:money",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"
@@ -23,6 +31,12 @@
     "turbo": "^2.9.3",
     "tsx": "^4.21.0",
     "typescript": "5.9.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.2",
+      "@types/react-dom": "19.2.2"
+    }
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {

@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "../../../../packages/sirius-core/src/styles/theme.css";
+
+@source "../../../../packages/sirius-core/src/**/*.{ts,tsx}";
+@source "../../../../packages/ui/src/**/*.{ts,tsx}";
+
+:root {
+  --app: var(--domain-do);
+}
+
+@theme inline {
+  --font-space: var(--font-space-bold), ui-sans-serif, sans-serif;
+}
