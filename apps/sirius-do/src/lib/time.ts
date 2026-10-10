@@ -19,15 +19,20 @@ export function formatTime(time: string | null): string {
   return time ? time.slice(0, 5) : "";
 }
 
-export function formatDuration(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  if (!h) return `${m} мин`;
-  return m ? `${h} цаг ${m} мин` : `${h} цаг`;
+export interface DurationUnits {
+  min: string;
+  hour: string;
 }
 
-export function timeRange(time: string | null, duration: number | null): string {
-  if (!time) return duration ? formatDuration(duration) : "";
+export function formatDuration(minutes: number, units: DurationUnits): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (!h) return `${m} ${units.min}`;
+  return m ? `${h} ${units.hour} ${m} ${units.min}` : `${h} ${units.hour}`;
+}
+
+export function timeRange(time: string | null, duration: number | null, units: DurationUnits): string {
+  if (!time) return duration ? formatDuration(duration, units) : "";
   if (!duration) return formatTime(time);
   return `${formatTime(time)}–${minutesToTime(timeToMinutes(time) + duration)}`;
 }

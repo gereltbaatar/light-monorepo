@@ -28,54 +28,54 @@ export function LoginForm({ next = "/", initialError }: LoginFormProps) {
   const error = emailState?.error ?? googleState?.error ?? initialError;
 
   return (
-    <div className="mt-8 space-y-6 font-mono">
+    <div className="mt-8 space-y-6">
       <form action={googleAction}>
         <input type="hidden" name="next" value={next} />
         <Button
           type="submit"
           variant="outline"
-          className="h-10 w-full rounded-full text-xs"
+          className="h-10 w-full text-xs"
           disabled={googlePending}
         >
           <GoogleIcon />
-          {googlePending ? "Redirecting…" : "Sign in with Google"}
+          {googlePending ? "Шилжиж байна…" : "Google-ээр нэвтрэх"}
         </Button>
       </form>
 
       <div className="flex items-center gap-3 text-[10px] uppercase text-muted-foreground">
         <span className="h-px flex-1 bg-border" />
-        or
+        эсвэл
         <span className="h-px flex-1 bg-border" />
       </div>
 
       <form action={emailAction} className="space-y-5">
         <input type="hidden" name="next" value={next} />
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-xs">Email</Label>
+          <Label htmlFor="email" className="text-xs">Имэйл</Label>
           <Input
             id="email"
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="Enter your email"
+            placeholder="Имэйлээ оруулна уу"
             required
-            className="h-10 rounded-full px-4 text-xs"
+            className="h-10 px-4 text-xs"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password" className="text-xs">Password</Label>
+          <Label htmlFor="password" className="text-xs">Нууц үг</Label>
           <Input
             id="password"
             name="password"
             type="password"
             autoComplete="current-password"
-            placeholder="Enter your password"
+            placeholder="Нууц үгээ оруулна уу"
             required
-            className="h-10 rounded-full px-4 text-xs"
+            className="h-10 px-4 text-xs"
           />
         </div>
-        <Button type="submit" className="h-10 w-full rounded-full text-xs" disabled={emailPending}>
-          {emailPending ? "Signing in…" : "Sign In"}
+        <Button type="submit" className="h-10 w-full text-xs" disabled={emailPending}>
+          {emailPending ? "Нэвтэрч байна…" : "Нэвтрэх"}
         </Button>
       </form>
 

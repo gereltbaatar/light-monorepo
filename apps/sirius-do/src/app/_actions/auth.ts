@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@workspace/sirius-core/supabase/server";
 import { safeNext } from "@workspace/sirius-core/lib/apps";
 import { browserOrigin } from "@workspace/sirius-core/lib/origin";
+import { getT } from "@/lib/i18n/server";
 
 export type AuthActionResult = { error: string } | undefined;
 
@@ -20,7 +21,7 @@ export async function signInWithEmail(
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return { error: error.code === "invalid_credentials" ? "Имэйл эсвэл нууц үг буруу байна." : error.message };
+    return { error: error.code === "invalid_credentials" ? (await getT()).errors.invalidCredentials : error.message };
   }
 
   redirect(next);

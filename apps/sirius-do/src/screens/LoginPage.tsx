@@ -1,12 +1,14 @@
 import { StarsArt } from "@/app/login/_components/StarsArt";
 import { LoginForm } from "@/app/login/_components/LoginForm";
+import { getT } from "@/lib/i18n/server";
 
 interface LoginPageProps {
   next?: string;
   error?: string;
 }
 
-export default function LoginPage({ next, error }: LoginPageProps) {
+export default async function LoginPage({ next, error }: LoginPageProps) {
+  const t = await getT();
   return (
     <main className="dark relative flex flex-1 overflow-hidden bg-background text-foreground">
       <StarsArt />
@@ -29,7 +31,7 @@ export default function LoginPage({ next, error }: LoginPageProps) {
             next={next}
             initialError={
               error === "oauth_failed"
-                ? "Google-ээр нэвтэрч чадсангүй."
+                ? t.login.oauthFailed
                 : undefined
             }
           />

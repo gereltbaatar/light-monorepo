@@ -2,7 +2,8 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
 import { lookupTaxpayer } from "@/lib/ebarimt";
-import { errorStatus, generateWithFallback } from "@/lib/gemini";
+import { errorStatus, generateWithFallback } from "@workspace/sirius-core/lib/gemini";
+import { createClient } from "@/lib/supabase/server";
 import { sanitizeItems, type ReceiptItem } from "@/lib/receipt-items";
 import { EXPENSE_CATEGORY_KEYS, toCategory, type Category } from "@/lib/categories";
 import { getT } from "@/lib/i18n/server";
@@ -185,7 +186,7 @@ export async function parseReceipt(
     try {
         const ai = new GoogleGenAI({ apiKey });
 
-        const response = await generateWithFallback(ai, {
+        const response = await generateWithFallback(await createClient(), ai, {
             contents: [
                 {
                     role: "user",

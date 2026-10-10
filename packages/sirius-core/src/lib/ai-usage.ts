@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createClient } from "@/lib/supabase/server";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Paid-tier USD per 1M tokens; thinking tokens bill as output.
 const PRICING: Record<string, { input: number; output: number }> = {
@@ -29,10 +29,9 @@ export function costUsd(model: string, usage: UsageTokens) {
 }
 
 // Best-effort: a failed write must never fail the AI call itself.
-export async function recordAiUsage(model: string, usage: UsageTokens | undefined) {
+export async function recordAiUsage(supabase: SupabaseClient, model: string, usage: UsageTokens | undefined) {
     if (!usage) return;
     try {
-        const supabase = await createClient();
         const {
             data: { user },
         } = await supabase.auth.getUser();
@@ -63,7 +62,7 @@ export interface AiUsageRow {
 }
 
 export interface AiUsageStats {
-    /** False until supabase-ai-usage.sql has been run. */
+    /** False until the ex_ai_usage table exists. */
     available: boolean;
     scans: number;
     inputTokens: number;
@@ -75,8 +74,7 @@ export interface AiUsageStats {
     recent: AiUsageRow[];
 }
 
-export async function getAiUsageStats(): Promise<AiUsageStats> {
-    const supabase = await createClient();
+export async function getAiUsageStats(supabase: SupabaseClient): Promise<AiUsageStats> {
     const { data, error } = await supabase
         .from("ex_ai_usage")
         .select("id, model, input_tokens, output_tokens, thinking_tokens, cost_usd, created_at")

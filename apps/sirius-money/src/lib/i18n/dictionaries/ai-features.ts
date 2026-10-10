@@ -1,5 +1,5 @@
 import { defineDictionary } from "../config";
-import type { AiFeature } from "@/lib/ai-features";
+import type { AiFeature } from "@workspace/sirius-core/lib/ai-features";
 
 interface FeatureText {
     title: string;

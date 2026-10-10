@@ -1,6 +1,7 @@
 import { SettingsPageHeader } from "@/app/profile/_components";
 import { BottomNav } from "@/components/navigation/BottomNav";
-import { getAiUsageStats, USD_TO_MNT } from "@/lib/ai-usage";
+import { getAiUsageStats, USD_TO_MNT } from "@workspace/sirius-core/lib/ai-usage";
+import { createClient } from "@/lib/supabase/server";
 import { INTL_LOCALE } from "@/lib/i18n/config";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { profileDict } from "@/lib/i18n/dictionaries/profile";
@@ -17,7 +18,7 @@ const Stat = ({ label, value, hint }: { label: string; value: string; hint?: str
 );
 
 export default async function AiUsagePage() {
-    const stats = await getAiUsageStats();
+    const stats = await getAiUsageStats(await createClient());
     const locale = await getLocale();
     const { settings, aiUsage: t } = await getT(profileDict);
     const average = stats.scans ? stats.costMnt / stats.scans : 0;

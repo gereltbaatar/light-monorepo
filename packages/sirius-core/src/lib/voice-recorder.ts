@@ -2,10 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
-import { useT } from "@/lib/i18n/client";
-import { voiceDict } from "@/lib/i18n/dictionaries/voice";
 
 export type RecorderState = "idle" | "recording" | "error";
+export type RecorderError = "mic-denied" | "mic-failed";
 
 const SILENCE_LEVEL = 0.02;
 const SILENCE_AFTER_SPEECH_MS = 1600;
@@ -17,8 +16,7 @@ export function useVoiceRecorder(onComplete: (audio: Blob) => void) {
     const [state, setState] = useState<RecorderState>("idle");
     // -1 tells the orb to fall back to its built-in animation.
     const levelRef = useRef(-1);
-    const [error, setError] = useState<string | null>(null);
-    const t = useT(voiceDict);
+    const [error, setError] = useState<RecorderError | null>(null);
 
     const recorderRef = useRef<MediaRecorder | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
@@ -113,13 +111,9 @@ export function useVoiceRecorder(onComplete: (audio: Blob) => void) {
         } catch (err) {
             cleanup();
             setState("error");
-            setError(
-                err instanceof DOMException && err.name === "NotAllowedError"
-                    ? t.micDenied
-                    : t.micFailed
-            );
+            setError(err instanceof DOMException && err.name === "NotAllowedError" ? "mic-denied" : "mic-failed");
         }
-    }, [cleanup, stop, t]);
+    }, [cleanup, stop]);
 
     useEffect(() => cancel, [cancel]);
 

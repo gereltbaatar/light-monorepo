@@ -79,8 +79,6 @@ export interface VoiceOrbSettings {
     mic: boolean;
 }
 
-export const VOICE_ORB_COOKIE = "voice-orb";
-
 export const DEFAULT_VOICE_ORB: VoiceOrbSettings = {
     orb: "siri-sheet",
     colorFrom: null,
@@ -100,27 +98,21 @@ const clamp = (n: number, min: number, max: number) => Math.min(max, Math.max(mi
 const hexOrNull = (value: unknown) =>
     typeof value === "string" && HEX.test(value) ? value.toLowerCase() : null;
 
-// Anything malformed falls back to the default so a bad cookie never breaks the page.
-export function parseVoiceOrbSettings(raw: string | undefined): VoiceOrbSettings {
-    if (!raw) return DEFAULT_VOICE_ORB;
-    try {
-        const data = JSON.parse(raw) as Partial<Record<keyof VoiceOrbSettings, unknown>>;
-        const speed = Number(data.speed);
-        const size = Number(data.size);
-        return {
-            orb: isOrbId(data.orb) ? data.orb : DEFAULT_VOICE_ORB.orb,
-            colorFrom: hexOrNull(data.colorFrom),
-            colorTo: hexOrNull(data.colorTo),
-            speed: Number.isFinite(speed) ? clamp(speed, MIN_SPEED, MAX_SPEED) : DEFAULT_VOICE_ORB.speed,
-            size: Number.isFinite(size) ? Math.round(clamp(size, MIN_SIZE, MAX_SIZE)) : DEFAULT_VOICE_ORB.size,
-            mic: data.mic !== false,
-        };
-    } catch {
-        return DEFAULT_VOICE_ORB;
-    }
+// Anything malformed falls back to the default so a bad row never breaks the page.
+export function parseVoiceOrbSettings(raw: unknown): VoiceOrbSettings {
+    if (!raw || typeof raw !== "object") return DEFAULT_VOICE_ORB;
+    const data = raw as Partial<Record<keyof VoiceOrbSettings, unknown>>;
+    const speed = Number(data.speed);
+    const size = Number(data.size);
+    return {
+        orb: isOrbId(data.orb) ? data.orb : DEFAULT_VOICE_ORB.orb,
+        colorFrom: hexOrNull(data.colorFrom),
+        colorTo: hexOrNull(data.colorTo),
+        speed: Number.isFinite(speed) ? clamp(speed, MIN_SPEED, MAX_SPEED) : DEFAULT_VOICE_ORB.speed,
+        size: Number.isFinite(size) ? Math.round(clamp(size, MIN_SIZE, MAX_SIZE)) : DEFAULT_VOICE_ORB.size,
+        mic: data.mic !== false,
+    };
 }
-
-export const serializeVoiceOrbSettings = (settings: VoiceOrbSettings) => JSON.stringify(settings);
 
 /** The gradient the orb actually renders with, after applying the default fallback. */
 export const resolveOrbColors = (settings: VoiceOrbSettings) => ({

@@ -7,8 +7,8 @@ import { AudioLines, ScanLine, Sparkles, type LucideIcon } from "lucide-react";
 import { toast } from "@/lib/toast";
 import { Switch } from "@workspace/ui/components/switch";
 import { setAiFeature } from "@/app/_actions/ai-features";
-import { AI_FEATURES, type AiFeature } from "@/lib/ai-features";
-import { useAiFeatures } from "@/lib/ai-features-client";
+import { AI_FEATURES, type AiFeature } from "@workspace/sirius-core/lib/ai-features";
+import { useAiFeatures } from "@workspace/sirius-core/components/AiSettingsProvider";
 import { useT } from "@/lib/i18n/client";
 import { aiFeaturesDict } from "@/lib/i18n/dictionaries/ai-features";
 

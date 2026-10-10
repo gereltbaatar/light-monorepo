@@ -4,7 +4,7 @@ import { Type } from "@google/genai";
 import { createClient } from "@/lib/supabase/server";
 import { getTransactions } from "@/lib/transactions";
 import { buildSpendingSummary, type SpendingSummary } from "@/lib/spending-summary";
-import { ADVISOR_MODELS, errorStatus, generateWithFallback, getGemini } from "@/lib/gemini";
+import { ADVISOR_MODELS, errorStatus, generateWithFallback, getGemini } from "@workspace/sirius-core/lib/gemini";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { isAiFeatureEnabled } from "@/lib/ai-features-server";
 import { aiFeaturesDict } from "@/lib/i18n/dictionaries/ai-features";
@@ -89,7 +89,7 @@ export async function getAdvice(): Promise<AdviceResult> {
     if (cached && Date.now() - cached.at < ADVICE_TTL_MS) return cached.value;
 
     try {
-        const response = await generateWithFallback(ai, {
+        const response = await generateWithFallback(await createClient(), ai, {
             contents: [
                 {
                     role: "user",
@@ -196,7 +196,7 @@ export async function getPopularQuestions(): Promise<QuestionsResult> {
 
     if (!value) {
         try {
-            const response = await generateWithFallback(ai, {
+            const response = await generateWithFallback(await createClient(), ai, {
                 contents: prompt,
                 config: { responseMimeType: "application/json" },
             }, ADVISOR_MODELS);
@@ -243,7 +243,7 @@ export async function askAdvisor(history: ChatMessage[]): Promise<ChatResult> {
     if (!loaded) return { error: t.signedOut };
 
     try {
-        const response = await generateWithFallback(ai, {
+        const response = await generateWithFallback(await createClient(), ai, {
             contents: messages.map((m) => ({ role: m.role, parts: [{ text: m.text }] })),
             config: {
                 systemInstruction: `${advisorPersona(locale)}\nThe user's spending summary for the last 30 days (JSON): ${JSON.stringify(loaded.summary)}\nUse it when the question is about the user's own finances. Keep the answer under 120 words.`,

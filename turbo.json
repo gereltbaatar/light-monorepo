@@ -15,7 +15,8 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "env": [
-        "NEXT_PUBLIC_*"
+        "NEXT_PUBLIC_*",
+        "GEMINI_API_KEY"
       ],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
@@ -29,7 +30,8 @@
     "sirius-money#build": {
       "dependsOn": ["^build"],
       "env": [
-        "NEXT_PUBLIC_*"
+        "NEXT_PUBLIC_*",
+        "GEMINI_API_KEY"
       ],
       "outputs": [".next/**", "!.next/cache/**"]
     },

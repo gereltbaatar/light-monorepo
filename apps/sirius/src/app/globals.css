@@ -9,3 +9,7 @@
 :root {
   --app: var(--foreground);
 }
+
+@theme inline {
+  --font-space: var(--font-space-bold), ui-sans-serif, sans-serif;
+}

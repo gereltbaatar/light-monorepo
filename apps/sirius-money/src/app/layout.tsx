@@ -9,10 +9,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { THEME_INIT_SCRIPT } from "@/lib/theme-script";
 import { LocaleProvider } from "@/lib/i18n/client";
 import { getLocale } from "@/lib/i18n/server";
-import { AiFeaturesProvider } from "@/lib/ai-features-client";
-import { getAiFeatures } from "@/lib/ai-features-server";
-import { VoiceOrbProvider } from "@/lib/voice-orb-client";
-import { getVoiceOrbSettings } from "@/lib/voice-orb-server";
+import { AiSettingsProvider } from "@workspace/sirius-core/components/AiSettingsProvider";
+import { getAiSettings } from "@/lib/ai-features-server";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -63,11 +61,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [locale, aiFeatures, voiceOrb] = await Promise.all([
-    getLocale(),
-    getAiFeatures(),
-    getVoiceOrbSettings(),
-  ]);
+  const [locale, aiSettings] = await Promise.all([getLocale(), getAiSettings()]);
 
   return (
     <html
@@ -83,13 +77,11 @@ export default async function RootLayout({
         />
         <ThemeProvider>
           <LocaleProvider locale={locale}>
-            <AiFeaturesProvider features={aiFeatures}>
-              <VoiceOrbProvider settings={voiceOrb}>
-                <RegisterServiceWorker />
-                {children}
-                <IslandToaster />
-              </VoiceOrbProvider>
-            </AiFeaturesProvider>
+            <AiSettingsProvider settings={aiSettings}>
+              <RegisterServiceWorker />
+              {children}
+              <IslandToaster />
+            </AiSettingsProvider>
           </LocaleProvider>
         </ThemeProvider>
       </body>

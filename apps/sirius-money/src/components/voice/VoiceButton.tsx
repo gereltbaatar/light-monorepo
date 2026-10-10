@@ -4,11 +4,13 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Loader2, Mic, Square, X } from "lucide-react";
-import { VoiceOrb, type OrbState } from "@/components/voice-orbs/VoiceOrb";
-import { useVoiceOrbSettings } from "@/lib/voice-orb-client";
+import { VoiceOrb, type OrbState } from "@workspace/sirius-core/components/VoiceOrb";
+import { useVoiceOrbSettings } from "@workspace/sirius-core/components/AiSettingsProvider";
+import { blobToWav } from "@workspace/sirius-core/lib/wav";
+import { useVoiceRecorder } from "@workspace/sirius-core/lib/voice-recorder";
 import { toast } from "@/lib/toast";
 import { Drawer, DrawerContent, DrawerTitle } from "@workspace/ui/components/drawer";
-import { NotchedCard, SHEET_GAP_CLASS } from "@/components/NotchedCard";
+import { NotchedCard, SHEET_GAP_CLASS } from "@workspace/sirius-core/components/NotchedCard";
 import { Input } from "@workspace/ui/components/input";
 import { Switch } from "@workspace/ui/components/switch";
 import { cn } from "@/lib/utils";
@@ -16,12 +18,11 @@ import { parseVoiceTransaction, type ParsedVoice, type VoiceEntry } from "@/app/
 import { deleteTransaction, saveTransactions } from "@/app/_actions/transactions";
 import { useT } from "@/lib/i18n/client";
 import { voiceDict } from "@/lib/i18n/dictionaries/voice";
+import { orbDict } from "@/lib/i18n/dictionaries/orb";
 import { categoriesDict } from "@/lib/i18n/dictionaries/categories";
 import { moneyFormatter } from "@/components/functions";
-import { blobToWav } from "./wav";
-import { respondToWake } from "./wakeResponse";
-import { useVoiceRecorder } from "./useVoiceRecorder";
-import { setWakeWordEnabled, useWakeWord, useWakeWordSetting } from "./useWakeWord";
+import { respondToWake } from "@workspace/sirius-core/lib/wake-response";
+import { setWakeWordEnabled, useWakeWord, useWakeWordSetting } from "@workspace/sirius-core/lib/wake-word";
 
 type Phase = "listening" | "processing" | "confirm";
 
@@ -43,6 +44,7 @@ export const VoiceButton = () => {
     const wake = useWakeWordSetting();
     const orbSettings = useVoiceOrbSettings();
     const t = useT(voiceDict);
+    const orbLabel = useT(orbDict).label;
 
     const save = useCallback(
         async (voice: ParsedVoice) => {
@@ -201,13 +203,16 @@ export const VoiceButton = () => {
                             {phase !== "confirm" && (
                                 <>
                                     <p className="min-h-5 text-center text-sm text-muted-foreground">
-                                        {phase === "processing" ? t.understanding : recorder.error}
+                                        {phase === "processing"
+                                            ? t.understanding
+                                            : recorder.error && (recorder.error === "mic-denied" ? t.micDenied : t.micFailed)}
                                     </p>
 
                                     <div className="flex justify-center pb-4 pt-1">
                                         <VoiceOrb
                                             state={orbState}
                                             levelRef={orbSettings.mic ? recorder.levelRef : undefined}
+                                            label={orbLabel}
                                         />
                                     </div>
 

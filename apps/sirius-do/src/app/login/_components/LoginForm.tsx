@@ -5,6 +5,7 @@ import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import { signInWithEmail, signInWithGoogle } from "@/app/_actions/auth";
+import { useI18n } from "@/lib/i18n/client";
 
 interface LoginFormProps {
   next?: string;
@@ -23,6 +24,7 @@ function GoogleIcon() {
 }
 
 export function LoginForm({ next = "/", initialError }: LoginFormProps) {
+  const { t } = useI18n();
   const [emailState, emailAction, emailPending] = useActionState(signInWithEmail, undefined);
   const [googleState, googleAction, googlePending] = useActionState(signInWithGoogle, undefined);
   const error = emailState?.error ?? googleState?.error ?? initialError;
@@ -38,44 +40,44 @@ export function LoginForm({ next = "/", initialError }: LoginFormProps) {
           disabled={googlePending}
         >
           <GoogleIcon />
-          {googlePending ? "Шилжиж байна…" : "Google-ээр нэвтрэх"}
+          {googlePending ? t.login.redirecting : t.login.google}
         </Button>
       </form>
 
       <div className="flex items-center gap-3 text-[10px] uppercase text-muted-foreground">
         <span className="h-px flex-1 bg-border" />
-        эсвэл
+        {t.login.or}
         <span className="h-px flex-1 bg-border" />
       </div>
 
       <form action={emailAction} className="space-y-5">
         <input type="hidden" name="next" value={next} />
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-xs">Имэйл</Label>
+          <Label htmlFor="email" className="text-xs">{t.login.email}</Label>
           <Input
             id="email"
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="Имэйлээ оруулна уу"
+            placeholder={t.login.emailPlaceholder}
             required
             className="h-10 px-4 text-xs"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password" className="text-xs">Нууц үг</Label>
+          <Label htmlFor="password" className="text-xs">{t.login.password}</Label>
           <Input
             id="password"
             name="password"
             type="password"
             autoComplete="current-password"
-            placeholder="Нууц үгээ оруулна уу"
+            placeholder={t.login.passwordPlaceholder}
             required
             className="h-10 px-4 text-xs"
           />
         </div>
         <Button type="submit" className="h-10 w-full text-xs" disabled={emailPending}>
-          {emailPending ? "Нэвтэрч байна…" : "Нэвтрэх"}
+          {emailPending ? t.login.signingIn : t.login.signIn}
         </Button>
       </form>
 

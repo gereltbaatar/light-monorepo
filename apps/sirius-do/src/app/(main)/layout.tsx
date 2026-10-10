@@ -1,28 +1,38 @@
-import Link from "next/link";
-import { SectionNav } from "@workspace/sirius-core/components/SectionNav";
+import { Suspense } from "react";
+import { getClock, getProfile } from "@workspace/sirius-core/lib/auth";
+import { createClient } from "@workspace/sirius-core/supabase/server";
+import { BottomNav } from "@/app/_components/BottomNav";
+import { getT } from "@/lib/i18n/server";
+import { getCategories } from "@/lib/tasks";
+import { MobileNav, Sidebar, type SidebarUser } from "./_components/Sidebar";
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+export default async function MainLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient();
+  const [profile, { data }, t, { today }, categories] = await Promise.all([
+    getProfile(),
+    supabase.auth.getUser(),
+    getT(),
+    getClock(),
+    getCategories(),
+  ]);
+  const meta = data.user?.user_metadata ?? {};
+  const email = profile?.email ?? "";
+  const user: SidebarUser = {
+    name: profile?.display_name || meta.full_name || meta.name || email.split("@")[0] || t.nav.fallbackUser,
+    email,
+    avatarUrl: profile?.avatar_url || meta.avatar_url || meta.picture || null,
+  };
+
   return (
-    <>
-      <header className="border-b bg-background">
-        <div className="mx-auto flex h-12 max-w-6xl items-center px-4">
-          <Link href="/" className="text-sm font-semibold tracking-tight">
-            Sirius Do
-          </Link>
-          <form action="/auth/signout" method="post" className="ml-auto">
-            <button type="submit" className="text-sm text-muted-foreground hover:text-foreground">
-              Гарах
-            </button>
-          </form>
-        </div>
-        <SectionNav
-          sections={[
-            { href: "/", label: "Өнөөдөр" },
-            { href: "/calendar", label: "Хуанли" },
-          ]}
-        />
-      </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">{children}</main>
-    </>
+    <div className="flex flex-1 bg-background text-foreground">
+      <Sidebar user={user} />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <MobileNav user={user} />
+        <main className="w-full flex-1 px-4 pb-44 md:px-8 md:pt-6 md:pb-6">{children}</main>
+        <Suspense>
+          <BottomNav today={today} categories={categories} />
+        </Suspense>
+      </div>
+    </div>
   );
 }

@@ -4,13 +4,13 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Drawer, DrawerContent } from "@workspace/ui/components/drawer";
 import { toast } from "@/lib/toast";
-import { NotchedCard, SHEET_GAP_CLASS } from "@/components/NotchedCard";
+import { NotchedCard, SHEET_GAP_CLASS } from "@workspace/sirius-core/components/NotchedCard";
 import { ScanStep } from "./ScanStep";
 import { DetailsSheet } from "./DetailsSheet";
 import { AnalyzingOverlay } from "./AnalyzingOverlay";
 import type { ScannedDraft } from "./shared";
 import { useT } from "@/lib/i18n/client";
-import { useAiFeatures } from "@/lib/ai-features-client";
+import { useAiFeatures } from "@workspace/sirius-core/components/AiSettingsProvider";
 import { scanDict } from "@/lib/i18n/dictionaries/scan";
 
 type Step = "scan" | "analyzing" | "details";

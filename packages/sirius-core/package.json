@@ -6,15 +6,19 @@
     "./supabase/*": "./src/supabase/*.ts",
     "./domains/*": "./src/domains/*.ts",
     "./lib/*": "./src/lib/*.ts",
-    "./components/*": "./src/components/*.tsx"
+    "./components/*": "./src/components/*.tsx",
+    "./voice-orbs/use-audio-level": "./src/voice-orbs/lib/use-audio-level.ts"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@google/genai": "^2.17.1",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.0",
+    "@workspace/ui": "workspace:*",
+    "lucide-react": "^1.7.0",
     "server-only": "^0.0.1"
   },
   "devDependencies": {

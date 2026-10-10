@@ -1,9 +1,9 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { AI_FEATURES_COOKIE, isAiFeature, serializeAiFeatures } from "@/lib/ai-features";
-import { getAiFeatures } from "@/lib/ai-features-server";
+import { isAiFeature } from "@workspace/sirius-core/lib/ai-features";
+import { saveAiFeature } from "@workspace/sirius-core/lib/ai-settings";
+import { createClient } from "@/lib/supabase/server";
 
 export async function setAiFeature(
     feature: string,
@@ -13,12 +13,8 @@ export async function setAiFeature(
         return { error: "Unknown setting" };
     }
 
-    const next = { ...(await getAiFeatures()), [feature]: enabled };
-    (await cookies()).set(AI_FEATURES_COOKIE, serializeAiFeatures(next), {
-        path: "/",
-        maxAge: 60 * 60 * 24 * 365,
-        sameSite: "lax",
-    });
+    const result = await saveAiFeature(await createClient(), feature, enabled);
+    if ("error" in result) return result;
     revalidatePath("/", "layout");
     return { ok: true };
 }

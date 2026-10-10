@@ -15,4 +15,14 @@ export interface Task {
   due_time: string | null;
   duration_minutes: number | null;
   completed_at: string | null;
+  category_id: string | null;
+}
+
+export interface Category {
+  id: string;
+  key: string | null;
+  name: string | null;
+  icon: string;
+  color: string;
+  position: number;
 }

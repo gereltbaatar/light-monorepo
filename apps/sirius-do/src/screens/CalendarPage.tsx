@@ -4,7 +4,9 @@ import { addDays, daysBetween, monthRange, weekRange, type Day } from "@workspac
 import { MonthCalendar } from "@workspace/sirius-core/components/MonthCalendar";
 import { QuickAddTask } from "@/app/_components/QuickAddTask";
 import { WeekCalendar } from "@/app/_components/WeekCalendar";
-import { formatDate, LOCALE } from "@/lib/locale";
+import { INTL_LOCALE } from "@/lib/i18n/config";
+import { getLocale, getT } from "@/lib/i18n/server";
+import { formatDate } from "@/lib/locale";
 import { getTasksDue } from "@/lib/tasks";
 
 interface CalendarPageProps {
@@ -16,7 +18,7 @@ const tab =
   "rounded-sm px-2 py-1 text-sm text-muted-foreground hover:text-foreground aria-[current=page]:bg-muted aria-[current=page]:text-foreground";
 
 export default async function CalendarPage({ view, date }: CalendarPageProps) {
-  const { profile, today } = await getClock();
+  const [{ profile, today }, locale, t] = await Promise.all([getClock(), getLocale(), getT()]);
   const weekStartsOn = profile?.week_starts_on ?? 1;
   const anchor: Day = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : today;
 
@@ -27,29 +29,29 @@ export default async function CalendarPage({ view, date }: CalendarPageProps) {
 
   const title =
     view === "week"
-      ? `${formatDate(range.start, { month: "short", day: "numeric" })} – ${formatDate(range.end, { month: "short", day: "numeric", year: "numeric" })}`
-      : formatDate(range.start, { month: "long", year: "numeric" });
+      ? `${formatDate(range.start, { month: "short", day: "numeric" }, locale)} – ${formatDate(range.end, { month: "short", day: "numeric", year: "numeric" }, locale)}`
+      : formatDate(range.start, { month: "long", year: "numeric" }, locale);
 
   return (
     <div className="space-y-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
         <nav className="flex items-center gap-1">
-          <Link href={`/calendar?view=${view}&date=${prev}`} className={tab} aria-label="Өмнөх">
+          <Link href={`/calendar?view=${view}&date=${prev}`} className={tab} aria-label={t.calendar.prev}>
             ←
           </Link>
           <Link href={`/calendar?view=${view}`} className={tab}>
-            Өнөөдөр
+            {t.calendar.today}
           </Link>
-          <Link href={`/calendar?view=${view}&date=${next}`} className={tab} aria-label="Дараах">
+          <Link href={`/calendar?view=${view}&date=${next}`} className={tab} aria-label={t.calendar.next}>
             →
           </Link>
           <span className="mx-2 h-4 border-l" />
           <Link href={`/calendar?view=week&date=${anchor}`} aria-current={view === "week" ? "page" : undefined} className={tab}>
-            7 хоног
+            {t.calendar.week}
           </Link>
           <Link href={`/calendar?view=month&date=${anchor}`} aria-current={view === "month" ? "page" : undefined} className={tab}>
-            Сар
+            {t.calendar.month}
           </Link>
         </nav>
       </header>
@@ -63,7 +65,7 @@ export default async function CalendarPage({ view, date }: CalendarPageProps) {
           month={range}
           today={today}
           weekStartsOn={weekStartsOn}
-          locale={LOCALE}
+          locale={INTL_LOCALE[locale]}
           items={tasks.map((t) => ({
             kind: "task",
             id: t.id,

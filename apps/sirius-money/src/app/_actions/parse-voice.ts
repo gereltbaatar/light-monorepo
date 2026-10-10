@@ -2,7 +2,8 @@
 
 import { Type } from "@google/genai";
 import { CATEGORY_KEYS, toCategory, type Category } from "@/lib/categories";
-import { errorStatus, generateWithFallback, getGemini } from "@/lib/gemini";
+import { errorStatus, generateWithFallback, getGemini } from "@workspace/sirius-core/lib/gemini";
+import { createClient } from "@/lib/supabase/server";
 import { sanitizeItems, type ReceiptItem } from "@/lib/receipt-items";
 import { getT } from "@/lib/i18n/server";
 import { isAiFeatureEnabled } from "@/lib/ai-features-server";
@@ -145,7 +146,7 @@ export async function parseVoiceTransaction(formData: FormData): Promise<ParseVo
     const todayDate = DATE_PATTERN.test(today) ? today : new Date().toISOString().slice(0, 10);
 
     try {
-        const response = await generateWithFallback(ai, {
+        const response = await generateWithFallback(await createClient(), ai, {
             contents: [
                 {
                     role: "user",

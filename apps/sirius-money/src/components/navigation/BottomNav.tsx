@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { VoiceButton } from "@/components/voice/VoiceButton";
 import { ScanSheet } from "@/components/scan/ScanSheet";
 import { useT } from "@/lib/i18n/client";
-import { useAiFeatures } from "@/lib/ai-features-client";
+import { useAiFeatures } from "@workspace/sirius-core/components/AiSettingsProvider";
 import { homeDict } from "@/lib/i18n/dictionaries/home";
 
 export const BottomNav = () => {

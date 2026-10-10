@@ -1,7 +1,8 @@
 import "server-only";
 
 import { GoogleGenAI } from "@google/genai";
-import { recordAiUsage } from "@/lib/ai-usage";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { recordAiUsage } from "./ai-usage";
 
 const DEFAULT_MODELS = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-3.5-flash-lite"];
 
@@ -20,6 +21,7 @@ export function getGemini(): GoogleGenAI | null {
 
 // Free-tier Gemini returns transient 503/429 under load, so retry then fall back.
 export async function generateWithFallback(
+    supabase: SupabaseClient,
     ai: GoogleGenAI,
     request: Omit<Parameters<GoogleGenAI["models"]["generateContent"]>[0], "model">,
     models: string[] = DEFAULT_MODELS
@@ -29,7 +31,7 @@ export async function generateWithFallback(
         for (let attempt = 0; attempt < 2; attempt++) {
             try {
                 const response = await ai.models.generateContent({ ...request, model });
-                await recordAiUsage(response.modelVersion ?? model, response.usageMetadata);
+                await recordAiUsage(supabase, response.modelVersion ?? model, response.usageMetadata);
                 return response;
             } catch (error) {
                 lastError = error;

@@ -1,12 +1,10 @@
 import "server-only";
 
-import { cookies } from "next/headers";
-import { AI_FEATURES_COOKIE, parseAiFeatures, type AiFeature, type AiFeatures } from "./ai-features";
+import * as shared from "@workspace/sirius-core/lib/ai-settings";
+import type { AiFeature } from "@workspace/sirius-core/lib/ai-features";
+import { createClient } from "@/lib/supabase/server";
 
-export async function getAiFeatures(): Promise<AiFeatures> {
-    return parseAiFeatures((await cookies()).get(AI_FEATURES_COOKIE)?.value);
-}
+export const getAiSettings = async () => shared.getAiSettings(await createClient());
 
-export async function isAiFeatureEnabled(feature: AiFeature): Promise<boolean> {
-    return (await getAiFeatures())[feature];
-}
+export const isAiFeatureEnabled = async (feature: AiFeature) =>
+    shared.isAiFeatureEnabled(await createClient(), feature);
