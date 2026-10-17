@@ -8,13 +8,18 @@ import { parseVoiceOrbSettings, type VoiceOrbSettings } from "./voice-orb";
 export { DEFAULT_AI_SETTINGS, type AiSettings } from "./ai-settings-shared";
 
 // Stored on the shared profile so every Sirius app reads the same settings.
-export async function getAiSettings(supabase: SupabaseClient): Promise<AiSettings> {
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return parseAiSettings(null);
+// Pass userId when the caller already knows it, to skip an Auth round trip.
+export async function getAiSettings(supabase: SupabaseClient, userId?: string | null): Promise<AiSettings> {
+    let id = userId;
+    if (id === undefined) {
+        const {
+            data: { user },
+        } = await supabase.auth.getUser();
+        id = user?.id ?? null;
+    }
+    if (!id) return parseAiSettings(null);
 
-    const { data } = await supabase.from("profiles").select("ai_settings").eq("id", user.id).maybeSingle();
+    const { data } = await supabase.from("profiles").select("ai_settings").eq("id", id).maybeSingle();
     return parseAiSettings(data?.ai_settings);
 }
 

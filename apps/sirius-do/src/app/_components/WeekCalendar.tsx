@@ -1,5 +1,6 @@
 import type { Day } from "@workspace/sirius-core/lib/date";
 import { getLocale, getT } from "@/lib/i18n/server";
+import { PRIORITY_COLOR } from "@/lib/priority";
 import { formatDate } from "@/lib/locale";
 import { minutesToTime, timeToMinutes } from "@/lib/time";
 import type { Task } from "@/lib/types";
@@ -7,12 +8,6 @@ import type { Task } from "@/lib/types";
 const HOUR_PX = 60;
 const DEFAULT_MINUTES = 30;
 
-export const PRIORITY_COLOR: Record<Task["priority"], string> = {
-  low: "#2dd4bf",
-  medium: "var(--domain-do)",
-  high: "var(--domain-fit)",
-  urgent: "#f43f5e",
-};
 
 function tint(color: string): string {
   return `color-mix(in oklab, ${color} 22%, var(--card))`;

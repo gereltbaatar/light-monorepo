@@ -48,6 +48,18 @@ export async function getOpenTasks(): Promise<Task[]> {
   return (data ?? []) as Task[];
 }
 
+export async function getUndatedOpenTasks(): Promise<Task[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("do_tasks")
+    .select(COLUMNS)
+    .eq("status", "todo")
+    .is("due_date", null)
+    .order("created_at");
+
+  return (data ?? []) as Task[];
+}
+
 export async function getDoneTasks(limit = 50): Promise<Task[]> {
   const supabase = await createClient();
   const { data } = await supabase

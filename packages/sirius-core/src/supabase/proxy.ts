@@ -36,9 +36,9 @@ export async function guardSession(request: NextRequest, { app, publicPrefixes =
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims refreshes a near-expiry session and verifies locally with asymmetric keys.
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims?.sub ? data.claims : null;
 
   const { pathname, search } = request.nextUrl;
   const origin = browserOrigin(request.headers, request.url);

@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Nunito } from "next/font/google";
 import localFont from "next/font/local";
-import { Toaster } from "sonner";
+import Script from "next/script";
 import { AiSettingsProvider } from "@workspace/sirius-core/components/AiSettingsProvider";
 import { getAiSettings } from "@workspace/sirius-core/lib/ai-settings";
+import { getAuthUser } from "@workspace/sirius-core/lib/auth";
 import { createClient } from "@workspace/sirius-core/supabase/server";
+import { IslandToaster } from "@/app/_components/IslandToaster";
 import { I18nProvider } from "@/lib/i18n/client";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
@@ -28,7 +30,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [locale, aiSettings] = await Promise.all([getLocale(), createClient().then(getAiSettings)]);
+  const [locale, aiSettings] = await Promise.all([
+    getLocale(),
+    Promise.all([createClient(), getAuthUser()]).then(([supabase, user]) => getAiSettings(supabase, user?.id ?? null)),
+  ]);
 
   return (
     <html
@@ -36,14 +41,12 @@ export default async function RootLayout({
       className={`${nunito.variable} ${geistMono.variable} ${spaceBold.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-      </head>
       <body className="min-h-full flex flex-col">
+        <Script id="theme-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <I18nProvider locale={locale}>
           <AiSettingsProvider settings={aiSettings}>
             {children}
-            <Toaster position="top-center" />
+            <IslandToaster />
           </AiSettingsProvider>
         </I18nProvider>
       </body>

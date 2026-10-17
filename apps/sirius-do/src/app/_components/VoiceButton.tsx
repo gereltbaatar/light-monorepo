@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { Loader2, Mic, Square, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { Drawer, DrawerContent, DrawerTitle } from "@workspace/ui/components/drawer";
 import { Input } from "@workspace/ui/components/input";
 import { Switch } from "@workspace/ui/components/switch";
@@ -29,9 +29,11 @@ interface VoiceButtonProps {
   /** Only one mounted button should listen for the wake word. */
   wakeWord?: boolean;
   className?: string;
+  /** Replaces the round mic button with a custom trigger. */
+  children?: React.ReactNode;
 }
 
-export function VoiceButton({ categories, wakeWord = true, className }: VoiceButtonProps) {
+export function VoiceButton({ categories, wakeWord = true, className, children }: VoiceButtonProps) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [phase, setPhase] = useState<Phase>("listening");
@@ -146,13 +148,17 @@ export function VoiceButton({ categories, wakeWord = true, className }: VoiceBut
         type="button"
         onClick={begin}
         aria-label={t.voice.addByVoice}
-        className={cn(
-          "relative flex size-13 items-center justify-center rounded-full bg-[#1C1C1E] text-white shadow-lg transition-transform active:scale-[0.92] dark:ring-1 dark:ring-border",
-          className
-        )}
+        className={
+          children
+            ? className
+            : cn(
+                "relative flex size-13 items-center justify-center rounded-full bg-[#1C1C1E] text-white shadow-lg transition-transform active:scale-[0.92] dark:ring-1 dark:ring-border",
+                className
+              )
+        }
       >
-        <Mic className="size-5" strokeWidth={2.2} />
-        {wakeWord && wake.enabled && wake.supported && (
+        {children ?? <Mic className="size-5" strokeWidth={2.2} />}
+        {!children && wakeWord && wake.enabled && wake.supported && (
           <span className="absolute top-1 right-1 size-2.5 rounded-full bg-green-500 ring-2 ring-[#1C1C1E]" />
         )}
       </button>
@@ -216,6 +222,7 @@ export function VoiceButton({ categories, wakeWord = true, className }: VoiceBut
                   onChange={setDraft}
                   onSave={() => void save(draft)}
                   onRetry={begin}
+                  retryLabel={t.voice.sayAgain}
                 />
               )}
 
@@ -236,13 +243,14 @@ export function VoiceButton({ categories, wakeWord = true, className }: VoiceBut
   );
 }
 
-function ConfirmForm({
+export function ConfirmForm({
   draft,
   categories,
   isSaving,
   onChange,
   onSave,
   onRetry,
+  retryLabel,
 }: {
   draft: ParsedVoice;
   categories: Category[];
@@ -250,6 +258,7 @@ function ConfirmForm({
   onChange: (next: ParsedVoice) => void;
   onSave: () => void;
   onRetry: () => void;
+  retryLabel: string;
 }) {
   const { locale, t } = useI18n();
   const { tasks } = draft;
@@ -303,7 +312,7 @@ function ConfirmForm({
 
       <div className="grid grid-cols-2 gap-3 pt-1">
         <button type="button" onClick={onRetry} className="h-12 rounded-full bg-surface text-sm font-semibold">
-          {t.voice.sayAgain}
+          {retryLabel}
         </button>
         <button
           type="button"

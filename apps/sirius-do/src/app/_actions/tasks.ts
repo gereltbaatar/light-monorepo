@@ -26,6 +26,7 @@ export async function createTask(_prev: TaskActionResult, formData: FormData): P
     duration_minutes: duration > 0 ? Math.round(duration) : null,
     priority: PRIORITIES.find((p) => p === field(formData, "priority")) ?? "medium",
     category_id: field(formData, "category_id"),
+    notes: field(formData, "notes"),
   });
   if (error) return { error: error.message };
 
@@ -76,6 +77,14 @@ export async function setTaskDone(taskId: string, done: boolean): Promise<void> 
 export async function deleteTask(taskId: string): Promise<void> {
   const supabase = await createClient();
   await supabase.from("do_tasks").delete().eq("id", taskId);
+
+  revalidatePath("/", "layout");
+}
+
+export async function moveTasks(taskIds: string[], day: Day): Promise<void> {
+  if (taskIds.length === 0) return;
+  const supabase = await createClient();
+  await supabase.from("do_tasks").update({ due_date: day }).in("id", taskIds);
 
   revalidatePath("/", "layout");
 }

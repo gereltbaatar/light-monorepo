@@ -8,19 +8,27 @@ export interface ParsedTask {
   dueTime: string | null;
   durationMinutes: number | null;
   priority: TaskPriority | null;
+  notes: string | null;
 }
 
-const WEEKDAYS: [RegExp, number][] = [
-  [/^(sun(day)?|ням)$/, 0],
-  [/^(mon(day)?|даваа)$/, 1],
-  [/^(tue(s|sday)?|мягмар)$/, 2],
-  [/^(wed(nesday)?|лхагва)$/, 3],
-  [/^(thu(rs|rsday)?|пүрэв)$/, 4],
-  [/^(fri(day)?|баасан)$/, 5],
-  [/^(sat(urday)?|бямба)$/, 6],
+// Mongolian is often typed in Latin letters, so each weekday has those spellings too.
+const WEEKDAY_WORDS: string[][] = [
+  ["sun", "sunday", "ням", "nyam", "niam"],
+  ["mon", "monday", "даваа", "davaa"],
+  ["tue", "tues", "tuesday", "мягмар", "myagmar", "mygmar", "miagmar"],
+  ["wed", "wednesday", "лхагва", "lhagva", "lkhagva"],
+  ["thu", "thurs", "thursday", "пүрэв", "purev", "pürev", "puruv"],
+  ["fri", "friday", "баасан", "baasan"],
+  ["sat", "saturday", "бямба", "byamba", "bymba", "biamba"],
 ];
-const WEEKDAY =
-  "(?:sun(?:day)?|mon(?:day)?|tue(?:s|sday)?|wed(?:nesday)?|thu(?:rs|rsday)?|fri(?:day)?|sat(?:urday)?|ням|даваа|мягмар|лхагва|пүрэв|баасан|бямба)";
+const WEEKDAY = `(?:${WEEKDAY_WORDS.flat().sort((a, b) => b.length - a.length).join("|")})`;
+const TODAY_WORDS = ["today", "өнөөдөр", "unuudur", "onoodor", "unuudr", "önöödör"];
+const TOMORROW_WORDS = ["tomorrow", "tmr", "маргааш", "margaash", "margash"];
+const AFTER_TOMORROW_WORDS = ["day after tomorrow", "нөгөөдөр", "nuguudur", "nogoodor", "nögöödör"];
+const DAY_WORDS = [...TODAY_WORDS, "tonight", ...TOMORROW_WORDS, ...AFTER_TOMORROW_WORDS];
+const HOUR_SUFFIX = "цагт|цагаас|цагийн|tsagt|tsagaas|tsagiin";
+const MORNING = ["өглөө", "ogloo", "ögloo"];
+const EVENING = ["орой", "oroi", "шөнө", "shono", "үдээс хойш", "udees hoish"];
 const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 
 // Word boundaries that also hold for Cyrillic, which \b does not.
@@ -28,7 +36,7 @@ const B = "(?<=^|[\\s,.])";
 const E = "(?=$|[\\s,.!?])";
 
 function weekdayIndex(word: string): number {
-  return WEEKDAYS.find(([re]) => re.test(word))?.[1] ?? -1;
+  return WEEKDAY_WORDS.findIndex((words) => words.includes(word));
 }
 
 function nextWeekday(today: Day, weekday: number, skipThisWeek: boolean): Day {
@@ -47,8 +55,16 @@ function to24h(hour: number, minute: number, meridiem: string | undefined): numb
 
 // Pulls date, time, duration and priority out of free text.
 export function parseTask(input: string, today: Day): ParsedTask {
-  let text = ` ${input.trim()} `;
-  const result: ParsedTask = { title: "", dueDate: null, dueTime: null, durationMinutes: null, priority: null };
+  const [main = "", ...rest] = input.split("//");
+  let text = ` ${main.trim()} `;
+  const result: ParsedTask = {
+    title: "",
+    dueDate: null,
+    dueTime: null,
+    durationMinutes: null,
+    priority: null,
+    notes: rest.join("//").trim() || null,
+  };
 
   // Removes the first match the handler accepts; returning false skips a match.
   const take = (source: string, flags: string, fn: (m: RegExpMatchArray) => boolean | void) => {
@@ -62,6 +78,13 @@ export function parseTask(input: string, today: Day): ParsedTask {
   take(`${B}(!{1,3})${E}`, "", (m) => {
     result.priority = m[1]!.length > 1 ? "urgent" : "high";
   });
+  if (!result.priority) {
+    take(`${B}(p[1-4]|urgent|asap|яаралтай|important|чухал|low priority)${E}`, "i", (m) => {
+      const word = m[1]!.toLowerCase();
+      const levels: Record<string, TaskPriority> = { p1: "urgent", p2: "high", p3: "medium", p4: "low" };
+      result.priority = levels[word] ?? (/urgent|asap|яаралтай/.test(word) ? "urgent" : /low/.test(word) ? "low" : "high");
+    });
+  }
 
   const clock = "(\\d{1,2})(?::(\\d{2}))?\\s*(am|pm)?";
   take(`${B}(?:from\\s+)?${clock}\\s*(?:-|–|to)\\s*${clock}${E}`, "i", (m) => {
@@ -75,7 +98,7 @@ export function parseTask(input: string, today: Day): ParsedTask {
 
   if (result.durationMinutes === null) {
     take(
-      `${B}(?:for\\s+)?(\\d+(?:\\.\\d+)?)\\s*(?:h|hr|hrs|hours?|цаг)(?:\\s*(\\d+)\\s*(?:m|min|mins|minutes?|мин(?:ут)?))?${E}`,
+      `${B}(?:for\\s+)?(\\d+(?:\\.\\d+)?)\\s*(?:h|hr|hrs|hours?|цаг|tsag)(?:\\s*(\\d+)\\s*(?:m|min|mins|minutes?|мин(?:ут)?|minut))?${E}`,
       "i",
       (m) => {
         result.durationMinutes = Math.round(Number(m[1]) * 60) + Number(m[2] ?? 0);
@@ -83,24 +106,31 @@ export function parseTask(input: string, today: Day): ParsedTask {
     );
   }
   if (result.durationMinutes === null) {
-    take(`${B}(?:for\\s+)?(\\d+)\\s*(?:m|min|mins|minutes?|мин(?:ут)?)${E}`, "i", (m) => {
+    take(`${B}(?:for\\s+)?(\\d+)\\s*(?:m|min|mins|minutes?|мин(?:ут)?|minut)${E}`, "i", (m) => {
       result.durationMinutes = Number(m[1]);
     });
   }
 
   if (result.dueTime === null) {
-    take(`${B}(at\\s+|@\\s*)?(\\d{1,2})(?::(\\d{2}))?\\s*(am|pm)?(\\s*цагт)?${E}`, "i", (m) => {
-      if (!m[1] && !m[3] && !m[4] && !m[5]) return false;
-      const minutes = to24h(Number(m[2]), Number(m[3] ?? 0), m[4]?.toLowerCase());
+    const part = [...MORNING, ...EVENING].join("|");
+    take(`${B}(at\\s+|@\\s*)?(?:(${part})\\s+)?(\\d{1,2})(?::(\\d{2}))?\\s*(am|pm)?(\\s*(?:${HOUR_SUFFIX}))?${E}`, "i", (m) => {
+      const [, at, dayPart, hourText, minuteText, meridiemText, suffix] = m;
+      if (!at && !dayPart && !minuteText && !meridiemText && !suffix) return false;
+      const hour = Number(hourText);
+      let meridiem = meridiemText?.toLowerCase();
+      if (!meridiem && dayPart) meridiem = MORNING.includes(dayPart.toLowerCase()) ? "am" : "pm";
+      // "3 цагт" in speech means 15:00; nobody schedules a task for 3 a.m. without saying so.
+      if (!meridiem && suffix && hour >= 1 && hour <= 6) meridiem = "pm";
+      const minutes = to24h(hour, Number(minuteText ?? 0), meridiem);
       if (minutes === null) return false;
       result.dueTime = minutesToTime(minutes);
     });
   }
 
-  take(`${B}(today|tonight|өнөөдөр|tomorrow|tmr|маргааш|day after tomorrow|нөгөөдөр)${E}`, "i", (m) => {
+  take(`${B}(${DAY_WORDS.join("|")})${E}`, "i", (m) => {
     const word = m[1]!.toLowerCase();
-    if (word === "day after tomorrow" || word === "нөгөөдөр") result.dueDate = addDays(today, 2);
-    else if (/tomorrow|tmr|маргааш/.test(word)) result.dueDate = addDays(today, 1);
+    if (AFTER_TOMORROW_WORDS.includes(word)) result.dueDate = addDays(today, 2);
+    else if (TOMORROW_WORDS.includes(word)) result.dueDate = addDays(today, 1);
     else result.dueDate = today;
     if (word === "tonight" && !result.dueTime) result.dueTime = "20:00";
   });
@@ -137,7 +167,8 @@ export function parseTask(input: string, today: Day): ParsedTask {
   result.title = text
     .replace(/\s+/g, " ")
     .replace(/\s+(at|on|for|by|from|in)\s*$/i, "")
-    .trim();
+    .trim()
+    .replace(/^(би|bi)\s+/i, "");
 
   return result;
 }

@@ -1,21 +1,19 @@
 import { Suspense } from "react";
-import { getClock, getProfile } from "@workspace/sirius-core/lib/auth";
-import { createClient } from "@workspace/sirius-core/supabase/server";
+import { getAuthUser, getClock, getProfile } from "@workspace/sirius-core/lib/auth";
 import { BottomNav } from "@/app/_components/BottomNav";
 import { getT } from "@/lib/i18n/server";
 import { getCategories } from "@/lib/tasks";
 import { MobileNav, Sidebar, type SidebarUser } from "./_components/Sidebar";
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const [profile, { data }, t, { today }, categories] = await Promise.all([
+  const [profile, authUser, t, { today }, categories] = await Promise.all([
     getProfile(),
-    supabase.auth.getUser(),
+    getAuthUser(),
     getT(),
     getClock(),
     getCategories(),
   ]);
-  const meta = data.user?.user_metadata ?? {};
+  const meta = (authUser?.metadata ?? {}) as Record<string, string | undefined>;
   const email = profile?.email ?? "";
   const user: SidebarUser = {
     name: profile?.display_name || meta.full_name || meta.name || email.split("@")[0] || t.nav.fallbackUser,

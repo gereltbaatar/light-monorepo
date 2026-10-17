@@ -9,7 +9,6 @@ import {
   House,
   ListTodo,
   LogOut,
-  Search,
   Settings,
   Sun,
   Tags,
@@ -17,6 +16,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { appUrl, type SiriusAppId } from "@workspace/sirius-core/lib/apps";
+import { LinkPending } from "@/app/_components/LinkPending";
 import { SiriusLogo } from "@/app/_components/SiriusLogo";
 import {
   DropdownMenu,
@@ -143,15 +143,7 @@ export function Sidebar({ user }: { user: SidebarUser }) {
         </span>
       </div>
 
-      <button type="button" className={cn(ITEM, "mt-3 w-full")}>
-        <Search className="size-4" />
-        <span>{t.nav.search}</span>
-        <kbd className="ml-auto rounded border px-1.5 font-mono text-[10px]">
-          /
-        </kbd>
-      </button>
-
-      <nav className="mt-1 space-y-0.5">
+      <nav className="mt-3 space-y-0.5">
         {PAGES.map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
@@ -163,6 +155,7 @@ export function Sidebar({ user }: { user: SidebarUser }) {
           >
             <Icon className="size-4" />
             {t.nav[label]}
+            <LinkPending className="ml-auto" />
           </Link>
         ))}
       </nav>
@@ -192,6 +185,8 @@ export function Sidebar({ user }: { user: SidebarUser }) {
 }
 
 export function MobileNav({ user }: { user: SidebarUser }) {
+  const pathname = usePathname();
+  if (pathname === "/add-task") return null;
 
   return (
     <header className="flex items-center justify-between gap-4 px-4 py-6 md:hidden">

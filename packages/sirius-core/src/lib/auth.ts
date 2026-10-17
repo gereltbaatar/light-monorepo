@@ -13,13 +13,32 @@ const FALLBACK_PROFILE: Omit<Profile, "id" | "email"> = {
   week_starts_on: 1,
 };
 
+export interface AuthUser {
+  id: string;
+  email: string;
+  metadata: Record<string, unknown>;
+}
+
+// Verifies the JWT locally when the project signs with asymmetric keys, so no Auth round trip.
+export const getAuthUser = cache(async (): Promise<AuthUser | null> => {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+  if (!claims?.sub) return null;
+
+  return {
+    id: claims.sub,
+    email: typeof claims.email === "string" ? claims.email : "",
+    metadata: (claims.user_metadata as Record<string, unknown> | undefined) ?? {},
+  };
+});
+
 // Cached per request so every domain query shares one profile read.
 export const getProfile = cache(async (): Promise<Profile | null> => {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser();
   if (!user) return null;
+
+  const supabase = await createClient();
 
   const { data } = await supabase
     .from("profiles")
@@ -27,7 +46,7 @@ export const getProfile = cache(async (): Promise<Profile | null> => {
     .eq("id", user.id)
     .maybeSingle();
 
-  return (data as Profile | null) ?? { id: user.id, email: user.email ?? "", ...FALLBACK_PROFILE };
+  return (data as Profile | null) ?? { id: user.id, email: user.email, ...FALLBACK_PROFILE };
 });
 
 // "Today" in the user's timezone, so every app agrees on dates.

@@ -2,7 +2,7 @@
 
 import { useActionState, useRef, useState, useSyncExternalStore, useTransition } from "react";
 import { AudioLines, Check, Globe, Monitor, Moon, Search, SlidersHorizontal, Sparkles, Sun, UserRound, type LucideIcon } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { Dialog, DialogContent, DialogTitle } from "@workspace/ui/components/dialog";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";

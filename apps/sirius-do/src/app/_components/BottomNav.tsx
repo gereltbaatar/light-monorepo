@@ -1,15 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { CalendarDays, ListTodo, Plus, Sun, Tags, type LucideIcon } from "lucide-react";
-import { Drawer, DrawerContent, DrawerTitle } from "@workspace/ui/components/drawer";
 import type { Day } from "@workspace/sirius-core/lib/date";
 import { useI18n } from "@/lib/i18n/client";
 import type { Category } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { QuickAddTask } from "./QuickAddTask";
+import { LinkPending } from "./LinkPending";
 import { VoiceButton } from "./VoiceButton";
 
 const PAGES: { href: string; label: "today" | "tasks" | "categories" | "calendar"; icon: LucideIcon }[] = [
@@ -29,9 +27,10 @@ export function BottomNav({ today, categories }: BottomNavProps) {
   const pathname = usePathname();
   const params = useSearchParams();
   const day = params.get("day");
-  const defaultDate = day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : today;
-  const defaultCategory = categories.find((c) => c.id === params.get("cat"))?.id;
-  const [createOpen, setCreateOpen] = useState(false);
+  const addParams = new URLSearchParams({ day: day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : today });
+  const cat = categories.find((c) => c.id === params.get("cat"))?.id;
+  if (cat) addParams.set("cat", cat);
+  if (pathname === "/add-task") return null;
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-30 px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] md:hidden">
@@ -46,11 +45,12 @@ export function BottomNav({ today, categories }: BottomNavProps) {
                 aria-label={t.nav[label]}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "grid size-[52px] place-items-center rounded-full transition-colors duration-300",
+                  "relative grid size-[52px] place-items-center rounded-full transition-colors duration-300",
                   active ? "bg-white text-[#1C1C1E]" : "text-gray-400"
                 )}
               >
                 <Icon className="size-5" strokeWidth={active ? 2.5 : 2} />
+                <LinkPending className="absolute -top-0.5 -right-0.5 size-4" />
               </Link>
             );
           })}
@@ -60,31 +60,16 @@ export function BottomNav({ today, categories }: BottomNavProps) {
           <div className="absolute bottom-full left-1/2 mb-3 -translate-x-1/2">
             <VoiceButton categories={categories} />
           </div>
-          <button
-            type="button"
-            onClick={() => setCreateOpen(true)}
+          <Link
+            href={`/add-task?${addParams}`}
             aria-label={t.nav.create}
             className="grid size-18 place-items-center rounded-full bg-[#1C1C1E] text-white shadow-lg transition-transform active:scale-95 dark:ring-1 dark:ring-border"
           >
             <Plus className="size-7" strokeWidth={2.2} />
-          </button>
+          </Link>
         </div>
       </div>
 
-      <Drawer open={createOpen} onOpenChange={setCreateOpen}>
-        <DrawerContent className="mx-auto max-w-[430px] bg-background">
-          <div className="space-y-4 px-5 pt-2 pb-[max(20px,env(safe-area-inset-bottom))]">
-            <DrawerTitle className="text-center text-xl font-bold tracking-tight">{t.quickAdd.label}</DrawerTitle>
-            <QuickAddTask
-              today={today}
-              defaultDate={defaultDate}
-              categories={categories}
-              defaultCategory={defaultCategory}
-              onCreated={() => setCreateOpen(false)}
-            />
-          </div>
-        </DrawerContent>
-      </Drawer>
     </div>
   );
 }
