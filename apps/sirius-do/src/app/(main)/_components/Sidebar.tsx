@@ -106,6 +106,14 @@ function ProfileMenu({
             </span>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          {compact && (
+            <DropdownMenuItem asChild className="gap-2">
+              <Link href="/categories">
+                <Tags className="size-4" />
+                {t.nav.categories}
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem className="gap-2" onSelect={() => setSettingsOpen(true)}>
             <Settings className="size-4" />
             {t.nav.settings}

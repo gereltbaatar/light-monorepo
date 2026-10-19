@@ -9,9 +9,15 @@ import { useI18n } from "@/lib/i18n/client";
 import { PRIORITY_COLOR, PRIORITY_ICON } from "@/lib/priority";
 import { timeRange } from "@/lib/time";
 import type { Category, Task } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 // Flips instantly; the server action catches up and React reverts if it throws.
-export function TaskCard({ task, category }: { task: Task; category?: Category }) {
+export function TaskCard({
+  task,
+  category,
+  className,
+  ...rest
+}: { task: Task; category?: Category } & React.LiHTMLAttributes<HTMLLIElement>) {
   const { t } = useI18n();
   const [done, setDone] = useOptimistic(task.status === "done");
   const [, startTransition] = useTransition();
@@ -26,7 +32,8 @@ export function TaskCard({ task, category }: { task: Task; category?: Category }
 
   return (
     <li
-      className="flex min-h-[68px] items-center gap-3.5 rounded-2xl py-3 pl-3 pr-3.5 transition-colors duration-300"
+      {...rest}
+      className={cn("flex min-h-[68px] items-center gap-3.5 rounded-2xl py-3 pl-3 pr-3.5 transition-colors duration-300", className)}
       style={{ backgroundColor: `color-mix(in oklab, ${color} ${done ? 10 : 35}%, var(--card))` }}
     >
       {done ? (

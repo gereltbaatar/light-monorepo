@@ -34,7 +34,13 @@ const localToday = () => {
 const signed = (entry: VoiceEntry) =>
     `${entry.type === "income" ? "+" : "-"}${moneyFormatter(entry.amount)}`;
 
-export const VoiceButton = () => {
+interface VoiceButtonProps {
+    /** Replaces the round mic button with a custom trigger. */
+    children?: React.ReactNode;
+    className?: string;
+}
+
+export const VoiceButton = ({ children, className }: VoiceButtonProps = {}) => {
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const [phase, setPhase] = useState<Phase>("listening");
@@ -179,18 +185,24 @@ export const VoiceButton = () => {
 
     return (
         <>
-            <motion.button
-                type="button"
-                onClick={begin}
-                whileTap={{ scale: 0.92 }}
-                aria-label={t.addByVoice}
-                className="relative flex h-13 w-13 items-center justify-center rounded-full bg-[#1C1C1E] text-white shadow-lg dark:ring-1 dark:ring-border"
-            >
-                <Mic className="h-5 w-5" strokeWidth={2.2} />
-                {wake.enabled && wake.supported && (
-                    <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-[#1C1C1E]" />
-                )}
-            </motion.button>
+            {children ? (
+                <button type="button" onClick={begin} aria-label={t.addByVoice} className={className}>
+                    {children}
+                </button>
+            ) : (
+                <motion.button
+                    type="button"
+                    onClick={begin}
+                    whileTap={{ scale: 0.92 }}
+                    aria-label={t.addByVoice}
+                    className="relative flex h-13 w-13 items-center justify-center rounded-full bg-[#1C1C1E] text-white shadow-lg dark:ring-1 dark:ring-border"
+                >
+                    <Mic className="h-5 w-5" strokeWidth={2.2} />
+                    {wake.enabled && wake.supported && (
+                        <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-[#1C1C1E]" />
+                    )}
+                </motion.button>
+            )}
 
             <Drawer open={open} onOpenChange={handleOpenChange}>
                 <DrawerContent className={`${SHEET_GAP_CLASS} mx-auto max-w-[406px] border-0 bg-transparent *:first:hidden`}>

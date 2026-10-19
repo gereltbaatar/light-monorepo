@@ -1,18 +1,12 @@
 import { Suspense } from "react";
-import { getAuthUser, getClock, getProfile } from "@workspace/sirius-core/lib/auth";
+import { getAuthUser, getProfile } from "@workspace/sirius-core/lib/auth";
 import { BottomNav } from "@/app/_components/BottomNav";
 import { getT } from "@/lib/i18n/server";
 import { getCategories } from "@/lib/tasks";
 import { MobileNav, Sidebar, type SidebarUser } from "./_components/Sidebar";
 
 export default async function MainLayout({ children }: { children: React.ReactNode }) {
-  const [profile, authUser, t, { today }, categories] = await Promise.all([
-    getProfile(),
-    getAuthUser(),
-    getT(),
-    getClock(),
-    getCategories(),
-  ]);
+  const [profile, authUser, t, categories] = await Promise.all([getProfile(), getAuthUser(), getT(), getCategories()]);
   const meta = (authUser?.metadata ?? {}) as Record<string, string | undefined>;
   const email = profile?.email ?? "";
   const user: SidebarUser = {
@@ -28,7 +22,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
         <MobileNav user={user} />
         <main className="w-full flex-1 px-4 pb-44 md:px-8 md:pt-6 md:pb-6">{children}</main>
         <Suspense>
-          <BottomNav today={today} categories={categories} />
+          <BottomNav categories={categories} />
         </Suspense>
       </div>
     </div>

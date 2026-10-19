@@ -10,7 +10,9 @@ export default async function TodayPage({ day }: { day?: Day }) {
   return (
     <div className="mx-auto max-w-2xl space-y-5">
       <DayView selected={day ?? today} today={today} weekStartsOn={profile?.week_starts_on ?? 1} />
-      <CaptureBar categories={categories} day={today} />
+      <div className="hidden md:block">
+        <CaptureBar categories={categories} day={today} />
+      </div>
     </div>
   );
 }
