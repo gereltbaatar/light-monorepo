@@ -17,6 +17,8 @@ import {
 import type { CreateGoalInput } from "@/app/_actions/goals";
 import { useT } from "@/lib/i18n/client";
 import { goalsDict } from "@/lib/i18n/dictionaries/goals";
+import { AmountInput } from "@/components/home/NewBudgetDrawer/AmountInput";
+import { DatePickerField } from "@/components/home/NewBudgetDrawer/DatePickerField";
 import { GoalImagePicker } from "./GoalImagePicker";
 import { GoalReminderRow } from "./GoalReminderRow";
 import {
@@ -29,12 +31,6 @@ import {
     submitGoal,
     type GoalFormProps,
 } from "./shared";
-
-const todayInputValue = () => {
-    const now = new Date();
-    const offsetMs = now.getTimezoneOffset() * 60_000;
-    return new Date(now.getTime() - offsetMs).toISOString().slice(0, 10);
-};
 
 export const ContributionGoalForm = ({ onSubmitDone }: GoalFormProps) => {
     const t = useT(goalsDict);
@@ -98,15 +94,11 @@ export const ContributionGoalForm = ({ onSubmitDone }: GoalFormProps) => {
                 <Label htmlFor="contribution_target" className={labelClass}>
                     {t.targetAmount}
                 </Label>
-                <Input
+                <AmountInput
                     id="contribution_target"
                     name="target_amount"
-                    type="number"
-                    inputMode="decimal"
-                    min={1}
                     required
                     placeholder="3000000"
-                    className={inputClass}
                 />
             </div>
 
@@ -115,15 +107,11 @@ export const ContributionGoalForm = ({ onSubmitDone }: GoalFormProps) => {
                     <Label htmlFor="contribution_amount" className={labelClass}>
                         {t.contribute}
                     </Label>
-                    <Input
+                    <AmountInput
                         id="contribution_amount"
                         name="contribution_amount"
-                        type="number"
-                        inputMode="decimal"
-                        min={1}
                         required
                         placeholder="200000"
-                        className={inputClass}
                     />
                 </div>
 
@@ -148,14 +136,7 @@ export const ContributionGoalForm = ({ onSubmitDone }: GoalFormProps) => {
                 <Label htmlFor="contribution_start" className={labelClass}>
                     {t.startDate}
                 </Label>
-                <Input
-                    id="contribution_start"
-                    name="start_date"
-                    type="date"
-                    required
-                    defaultValue={todayInputValue()}
-                    className={inputClass}
-                />
+                <DatePickerField id="contribution_start" name="start_date" />
             </div>
 
             <div className="space-y-2">

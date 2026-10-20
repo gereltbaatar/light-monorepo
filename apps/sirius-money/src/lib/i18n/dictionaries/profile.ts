@@ -7,6 +7,7 @@ type ProfileDict = {
         categories: string;
         aiUsage: string;
         language: string;
+        currencies: string;
         appearance: string;
         voiceOrb: string;
         aiGroup: string;
@@ -89,6 +90,7 @@ export const profileDict = defineDictionary<ProfileDict>({
             categories: "Categories",
             aiUsage: "AI usage",
             language: "Language",
+            currencies: "Currencies",
             appearance: "Appearance",
             voiceOrb: "Voice orb",
             aiGroup: "AI",
@@ -169,6 +171,7 @@ export const profileDict = defineDictionary<ProfileDict>({
             categories: "Ангилал",
             aiUsage: "AI хэрэглээ",
             language: "Хэл",
+            currencies: "Валют",
             appearance: "Харагдах байдал",
             voiceOrb: "Дуут орб",
             aiGroup: "AI",

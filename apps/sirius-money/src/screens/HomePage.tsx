@@ -1,4 +1,4 @@
-import { Bank, Goals, TotalBalance, Transactions } from "@/components/home";
+import { Bank, Goals, Loans, TotalBalance, Transactions } from "@/components/home";
 import { BottomNav, Header } from "@/components/navigation";
 
 const HomePage = () => {
@@ -8,6 +8,7 @@ const HomePage = () => {
       <TotalBalance />
       <Bank />
       <Goals />
+      <Loans />
       <Transactions />
       <BottomNav />
     </div>

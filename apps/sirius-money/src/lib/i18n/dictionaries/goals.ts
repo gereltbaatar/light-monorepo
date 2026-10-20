@@ -7,6 +7,7 @@ interface GoalsDict {
     newGoal: string;
     addNewGoal: string;
     back: string;
+    close: string;
     savings: string;
     savingsHint: string;
     plan: string;
@@ -23,6 +24,7 @@ interface GoalsDict {
     targetAmount: string;
     alreadySaved: string;
     targetDate: string;
+    pickDate: string;
     category: string;
     categories: Record<GoalCategoryKey, string>;
     contribute: string;
@@ -89,6 +91,7 @@ export const goalsDict = defineDictionary<GoalsDict>({
         newGoal: "New goal",
         addNewGoal: "Add new goal",
         back: "Back",
+        close: "Close",
         savings: "Savings",
         savingsHint: "Save up to a target",
         plan: "Plan",
@@ -105,6 +108,7 @@ export const goalsDict = defineDictionary<GoalsDict>({
         targetAmount: "Target amount",
         alreadySaved: "Already saved",
         targetDate: "Target date",
+        pickDate: "Pick a date",
         category: "Category",
         categories: {
             general: "General",
@@ -176,6 +180,7 @@ export const goalsDict = defineDictionary<GoalsDict>({
         newGoal: "Шинэ зорилго",
         addNewGoal: "Зорилго нэмэх",
         back: "Буцах",
+        close: "Хаах",
         savings: "Хуримтлал",
         savingsHint: "Зорилтот дүн хүртэл хуримтлуулах",
         plan: "Төлөвлөгөө",
@@ -192,6 +197,7 @@ export const goalsDict = defineDictionary<GoalsDict>({
         targetAmount: "Зорилтот дүн",
         alreadySaved: "Хуримтлуулсан",
         targetDate: "Зорилтот огноо",
+        pickDate: "Сонгох",
         category: "Ангилал",
         categories: {
             general: "Ерөнхий",
@@ -262,7 +268,10 @@ export const goalsDict = defineDictionary<GoalsDict>({
 });
 
 interface BudgetsDict {
+    newBudget: string;
+    back: string;
     addNewBudget: string;
+    close: string;
     recurring: string;
     recurringHint: string;
     limit: string;
@@ -271,23 +280,73 @@ interface BudgetsDict {
     limitAmount: string;
     period: string;
     warnAt: string;
+    customPercent: string;
     periodOptions: Record<PeriodKey, string>;
+    platform: string;
     name: string;
     namePlaceholder: string;
     amount: string;
+    currency: string;
+    approxMnt: (amount: string) => string;
+    rateLine: (code: string, rate: string, date: string) => string;
     repeats: string;
     dueDate: string;
     reminders: string;
-    remind3d: string;
-    remind1d: string;
+    noReminder: string;
+    remindDaysBefore: (days: number) => string;
     autoRepeat: string;
     autoRepeatHint: string;
+    createTasks: string;
+    createTasksHint: string;
+    taskFailed: string;
+    task: {
+        title: (name: string, amount: string) => string;
+        notes: (period: string, approxMnt: string | null) => string;
+    };
     createBudget: string;
+    budgetCreated: string;
+    errors: {
+        titleRequired: string;
+        amountPositive: string;
+        rateUnavailable: string;
+        invalid: string;
+        signedOut: string;
+        tableMissing: string;
+        createFailed: string;
+        deleteFailed: string;
+        tasksMigrationMissing: string;
+    };
+    detail: {
+        spent: string;
+        limitOf: (amount: string) => string;
+        left: (amount: string) => string;
+        over: (amount: string) => string;
+        payment: string;
+        nextDue: string;
+        dueToday: string;
+        daysLeft: (days: number) => string;
+        since: (date: string) => string;
+        yes: string;
+        no: string;
+        createdOn: string;
+        expenses: string;
+        noExpenses: string;
+        deleteBudget: string;
+        deleteConfirmTitle: (name: string) => string;
+        deleteConfirmBody: string;
+        cancel: string;
+        delete: string;
+        deleted: string;
+        doTask: string;
+    };
 }
 
 export const budgetsDict = defineDictionary<BudgetsDict>({
     en: {
+        newBudget: "New budget",
+        back: "Back",
         addNewBudget: "Add new budget",
+        close: "Close",
         recurring: "Recurring",
         recurringHint: "Fixed bills",
         limit: "Limit",
@@ -296,21 +355,72 @@ export const budgetsDict = defineDictionary<BudgetsDict>({
         limitAmount: "Limit",
         period: "Period",
         warnAt: "Warn at",
+        customPercent: "Custom",
         periodOptions: { weekly: "Weekly", monthly: "Monthly", yearly: "Yearly" },
+        platform: "Platform",
         name: "Name",
         namePlaceholder: "Tog, Internet, Netflix…",
         amount: "Amount",
+        currency: "Currency",
+        approxMnt: (amount) => `≈ ${amount}₮`,
+        rateLine: (code, rate, date) => `Mongolbank ${date}: 1 ${code} = ${rate}₮`,
         repeats: "Repeats",
         dueDate: "Due date",
         reminders: "Reminders",
-        remind3d: "3 days before",
-        remind1d: "1 day before",
+        noReminder: "No reminder",
+        remindDaysBefore: (days) => (days === 1 ? "1 day before" : `${days} days before`),
         autoRepeat: "Auto-repeat",
         autoRepeatHint: "Recreate the bill each period",
+        createTasks: "Create sirius-do tasks",
+        createTasksHint: "A task appears on each payment date",
+        taskFailed: "Budget created, but the sirius-do task couldn't be created",
+        task: {
+            title: (name, amount) => `Pay ${name} · ${amount}`,
+            notes: (period, approxMnt) =>
+                ["sirius-money", period, approxMnt && `≈ ${approxMnt}`].filter(Boolean).join(" · "),
+        },
         createBudget: "Create budget",
+        budgetCreated: "Budget created",
+        errors: {
+            titleRequired: "Enter a name",
+            amountPositive: "Enter an amount above zero",
+            rateUnavailable: "Couldn't get the exchange rate. Try again or use MNT.",
+            invalid: "Some fields are invalid",
+            signedOut: "Sign in again to continue",
+            tableMissing: "Budgets aren't set up yet. Run supabase-budgets.sql.",
+            createFailed: "Couldn't create the budget",
+            deleteFailed: "Couldn't delete the budget",
+            tasksMigrationMissing: "sirius-do tasks aren't set up yet. Run supabase-budget-tasks.sql.",
+        },
+        detail: {
+            spent: "Spent",
+            limitOf: (amount) => `Limit ${amount}`,
+            left: (amount) => `${amount} left`,
+            over: (amount) => `${amount} over`,
+            payment: "Payment",
+            nextDue: "Next payment",
+            dueToday: "Due today",
+            daysLeft: (days) => (days === 1 ? "1 day left" : `${days} days left`),
+            since: (date) => `Since ${date}`,
+            yes: "On",
+            no: "Off",
+            createdOn: "Created",
+            expenses: "Expenses this period",
+            noExpenses: "No expenses in this category yet",
+            deleteBudget: "Delete budget",
+            deleteConfirmTitle: (name) => `Delete "${name}"?`,
+            deleteConfirmBody: "This can't be undone.",
+            cancel: "Cancel",
+            delete: "Delete",
+            deleted: "Budget deleted",
+            doTask: "sirius-do task",
+        },
     },
     mn: {
+        newBudget: "Шинэ төсөв",
+        back: "Буцах",
         addNewBudget: "Төсөв нэмэх",
+        close: "Хаах",
         recurring: "Давтагдах",
         recurringHint: "Тогтмол төлбөр",
         limit: "Хязгаар",
@@ -319,17 +429,65 @@ export const budgetsDict = defineDictionary<BudgetsDict>({
         limitAmount: "Хязгаар",
         period: "Хугацаа",
         warnAt: "Анхааруулах",
+        customPercent: "Өөрөө оруулах",
         periodOptions: { weekly: "7 хоног бүр", monthly: "Сар бүр", yearly: "Жил бүр" },
+        platform: "Платформ",
         name: "Нэр",
         namePlaceholder: "Цахилгаан, Интернэт, Netflix…",
         amount: "Дүн",
+        currency: "Валют",
+        approxMnt: (amount) => `≈ ${amount}₮`,
+        rateLine: (code, rate, date) => `Монголбанк ${date}: 1 ${code} = ${rate}₮`,
         repeats: "Давтамж",
         dueDate: "Төлөх огноо",
         reminders: "Сануулга",
-        remind3d: "3 хоногийн өмнө",
-        remind1d: "1 хоногийн өмнө",
+        noReminder: "Сануулахгүй",
+        remindDaysBefore: (days) => `${days} хоногийн өмнө`,
         autoRepeat: "Автомат давталт",
         autoRepeatHint: "Үе бүр төлбөрийг дахин үүсгэнэ",
+        createTasks: "sirius-do-д task үүсгэх",
+        createTasksHint: "Төлөх өдөр бүр task гарна",
+        taskFailed: "Төсөв үүслээ, гэхдээ sirius-do task үүсгэж чадсангүй",
+        task: {
+            title: (name, amount) => `${name} төлөх · ${amount}`,
+            notes: (period, approxMnt) =>
+                ["sirius-money", period, approxMnt && `≈ ${approxMnt}`].filter(Boolean).join(" · "),
+        },
         createBudget: "Төсөв үүсгэх",
+        budgetCreated: "Төсөв үүслээ",
+        errors: {
+            titleRequired: "Нэр оруулна уу",
+            amountPositive: "0-ээс их дүн оруулна уу",
+            rateUnavailable: "Ханш авч чадсангүй. Дахин оролдох эсвэл MNT-ээр оруулна уу.",
+            invalid: "Зарим талбар буруу байна",
+            signedOut: "Үргэлжлүүлэхийн тулд дахин нэвтэрнэ үү",
+            tableMissing: "Төсвийн хүснэгт үүсээгүй байна. supabase-budgets.sql-ийг ажиллуулна уу.",
+            createFailed: "Төсөв үүсгэж чадсангүй",
+            deleteFailed: "Төсөв устгаж чадсангүй",
+            tasksMigrationMissing: "sirius-do task-ийн тохиргоо хийгдээгүй байна. supabase-budget-tasks.sql-ийг ажиллуулна уу.",
+        },
+        detail: {
+            spent: "Зарцуулсан",
+            limitOf: (amount) => `Хязгаар ${amount}`,
+            left: (amount) => `${amount} үлдсэн`,
+            over: (amount) => `${amount} хэтэрсэн`,
+            payment: "Төлбөр",
+            nextDue: "Дараагийн төлөлт",
+            dueToday: "Өнөөдөр төлөх",
+            daysLeft: (days) => `${days} хоног үлдсэн`,
+            since: (date) => `${date}-с хойш`,
+            yes: "Асаалттай",
+            no: "Унтраалттай",
+            createdOn: "Үүсгэсэн",
+            expenses: "Энэ хугацааны зарлага",
+            noExpenses: "Энэ ангилалд одоогоор зарлага алга",
+            deleteBudget: "Төсөв устгах",
+            deleteConfirmTitle: (name) => `"${name}" төсвийг устгах уу?`,
+            deleteConfirmBody: "Энэ үйлдлийг буцаах боломжгүй.",
+            cancel: "Болих",
+            delete: "Устгах",
+            deleted: "Төсөв устлаа",
+            doTask: "sirius-do task",
+        },
     },
 });

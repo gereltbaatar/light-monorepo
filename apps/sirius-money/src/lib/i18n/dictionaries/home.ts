@@ -26,6 +26,7 @@ export const homeDict = defineDictionary({
             subtitle: "track your spending",
             cta: "Track",
         },
+        goal: "Goal",
         goalDone: "Done",
         budget: "Budget",
         budgetSample: "New Bicycle",
@@ -34,6 +35,7 @@ export const homeDict = defineDictionary({
             title: "Add new",
             goal: "New goal",
             budget: "New budget",
+            close: "Close",
         },
         transactions: {
             title: "Transactions",
@@ -71,6 +73,7 @@ export const homeDict = defineDictionary({
             subtitle: "зарлагаа хянаарай",
             cta: "Холбох",
         },
+        goal: "Зорилго",
         goalDone: "Биелсэн",
         budget: "Төсөв",
         budgetSample: "Шинэ дугуй",
@@ -79,6 +82,7 @@ export const homeDict = defineDictionary({
             title: "Шинээр нэмэх",
             goal: "Шинэ зорилго",
             budget: "Шинэ төсөв",
+            close: "Хаах",
         },
         transactions: {
             title: "Гүйлгээ",

@@ -16,6 +16,8 @@ import {
 import type { CreateGoalInput } from "@/app/_actions/goals";
 import { useT } from "@/lib/i18n/client";
 import { goalsDict } from "@/lib/i18n/dictionaries/goals";
+import { AmountInput } from "@/components/home/NewBudgetDrawer/AmountInput";
+import { DatePickerField } from "@/components/home/NewBudgetDrawer/DatePickerField";
 import { GoalImagePicker } from "./GoalImagePicker";
 import {
     inputClass,
@@ -86,15 +88,11 @@ export const SavingsGoalForm = ({ onSubmitDone }: GoalFormProps) => {
                 <Label htmlFor="savings_target" className={labelClass}>
                     {t.targetAmount}
                 </Label>
-                <Input
+                <AmountInput
                     id="savings_target"
                     name="target_amount"
-                    type="number"
-                    inputMode="decimal"
-                    min={1}
                     required
                     placeholder="1000000"
-                    className={inputClass}
                 />
             </div>
 
@@ -103,26 +101,17 @@ export const SavingsGoalForm = ({ onSubmitDone }: GoalFormProps) => {
                     <Label htmlFor="savings_saved" className={labelClass}>
                         {t.alreadySaved}
                     </Label>
-                    <Input
-                        id="savings_saved"
-                        name="initial_amount"
-                        type="number"
-                        inputMode="decimal"
-                        min={0}
-                        placeholder="0"
-                        className={inputClass}
-                    />
+                    <AmountInput id="savings_saved" name="initial_amount" placeholder="0" />
                 </div>
 
                 <div className="space-y-2">
                     <Label htmlFor="savings_date" className={labelClass}>
                         {t.targetDate}
                     </Label>
-                    <Input
+                    <DatePickerField
                         id="savings_date"
                         name="target_date"
-                        type="date"
-                        className={inputClass}
+                        placeholder={t.pickDate}
                     />
                 </div>
             </div>

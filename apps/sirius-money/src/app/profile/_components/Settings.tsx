@@ -1,6 +1,7 @@
 import { SettingsItem } from "./SettingsItem";
 import { ThemeLabel } from "@/app/profile/theme/_components/ThemeLabel";
 import { LOCALE_NAMES } from "@/lib/i18n/config";
+import { getPreferredCurrencies } from "@/lib/currency-settings";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { profileDict } from "@/lib/i18n/dictionaries/profile";
 import { signOut } from "@/app/_actions/auth";
@@ -8,6 +9,11 @@ import { signOut } from "@/app/_actions/auth";
 export const Settings = async () => {
     const locale = await getLocale();
     const t = (await getT(profileDict)).settings;
+    const currencies = await getPreferredCurrencies();
+    const currencyLabel =
+        currencies.length > 2
+            ? `${currencies.slice(0, 2).join(", ")} +${currencies.length - 2}`
+            : currencies.join(", ");
 
     const settings = [
         {
@@ -33,6 +39,12 @@ export const Settings = async () => {
             description: LOCALE_NAMES[locale],
             rightLabel: LOCALE_NAMES[locale],
             path: "/profile/language",
+        },
+        {
+            title: t.currencies,
+            icon: "/currency.svg",
+            rightLabel: currencyLabel,
+            path: "/profile/currency",
         },
         {
             title: t.appearance,

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, Bell, Bot, Globe, LayoutGrid, Orbit, Palette, Settings, Sparkles } from "lucide-react";
+import { ChevronRight, Bell, Bot, Coins, Globe, LayoutGrid, Orbit, Palette, Settings, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -39,6 +39,8 @@ export const SettingsItem = ({ setting }: SettingItemProps) => {
                 return <Bell className="w-5 h-5" />;
             case "/language.svg":
                 return <Globe className="w-5 h-5" />;
+            case "/currency.svg":
+                return <Coins className="w-5 h-5" />;
             case "/theme.svg":
                 return <Palette className="w-5 h-5" />;
             case "/categories.svg":

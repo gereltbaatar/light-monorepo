@@ -80,7 +80,7 @@ export const BottomNav = () => {
                 onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
             >
                 <div className="mx-auto flex w-full max-w-[430px] items-end justify-between gap-2.5">
-                    <nav className={cn("flex h-16 shrink-0 items-center gap-1 rounded-[18px] p-2", SURFACE)}>
+                    <nav className={cn("flex h-14 shrink-0 items-center gap-1 rounded-[16px] p-2", SURFACE)}>
                         {navItems.map(({ icon: Icon, href, label }) => {
                             const isActive = pathname === href;
                             return (
@@ -90,7 +90,7 @@ export const BottomNav = () => {
                                     onClick={() => setOpen(false)}
                                     aria-label={label}
                                     aria-current={isActive ? "page" : undefined}
-                                    className="relative grid size-11 place-items-center rounded-[10px]"
+                                    className="relative grid size-10 place-items-center rounded-[10px]"
                                 >
                                     {isActive && (
                                         <motion.span
@@ -144,7 +144,7 @@ export const BottomNav = () => {
                             aria-expanded={open}
                             aria-controls="create-menu"
                             className={cn(
-                                "flex h-16 w-full items-center gap-3 rounded-[18px] px-[18px] text-[15px] font-semibold transition-[transform,background-color] duration-200 active:scale-95",
+                                "flex h-14 w-full items-center gap-3 rounded-[16px] px-[18px] text-[15px] font-semibold transition-[transform,background-color] duration-200 active:scale-95",
                                 SURFACE,
                                 open && "bg-[#2C2C2E]"
                             )}
